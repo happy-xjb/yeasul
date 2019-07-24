@@ -16,13 +16,13 @@ public class TimeUtil {
     }
 
     //获得时间的数字部分
-    public static int getTimeNum(String time){
+    public static long getTimeNum(String time){
         StringBuffer sb = new StringBuffer(time);
         //最后一个字符必删除
         sb.deleteCharAt(sb.length()-1);
         //判断是否为还有字母
         char c = sb.charAt(sb.length() - 1);
         if(c<48||c>57)  sb.deleteCharAt(sb.length()-1);
-        return Integer.parseInt(sb.toString());
+        return Long.parseLong(sb.toString());
     }
 }

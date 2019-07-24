@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -35,14 +37,14 @@ public class CheckUtil {
     @Autowired
     private ScheduledExecutorService scheduledExecutorService;
 
-    public void startCheck(NewService newService){
+    public void startHttpCheck(NewService newService){
         NewService.Check newServiceCheck = newService.getCheck();
         String url = newServiceCheck.getHttp();
         String interval = newServiceCheck.getInterval();    //循环时间
         String timeout = newServiceCheck.getTimeout();  //超时时间
-        int interval_timeNum = TimeUtil.getTimeNum(interval);   //循环时间数字部分
+        long interval_timeNum = TimeUtil.getTimeNum(interval);   //循环时间数字部分
         TimeUnit interval_timeUnit = TimeUtil.getTimeUnit(interval);    //循环时间单位
-        int timeout_timeNum = TimeUtil.getTimeNum(timeout); //超时时间数字部分
+        long timeout_timeNum = TimeUtil.getTimeNum(timeout); //超时时间数字部分
         TimeUnit timeout_timeUnit = TimeUtil.getTimeUnit(timeout);  //超时时间单位
         Check check = new Check().setCheckId("service:"+newService.getId())
                 .setName("Service '"+newService.getName()+"' check")
@@ -78,10 +80,46 @@ public class CheckUtil {
                 log.warn("【服务异常】" + check);
                 check.setStatus("failing").setOutput("服务异常");
                 checkMapper.updateByPrimaryKey(check);
-
             }
         }, 0, interval_timeNum, interval_timeUnit);
 
         System.out.println("执行至此");
+    }
+
+    //启动TCP检查
+
+    /**
+     *
+     * @param checkId   检查id
+     * @param host  ip地址
+     * @param port  端口号
+     * @param interval  循环检查时间
+     * @param timeout   超时时间，毫秒
+     * @param timeUnit  循环检查时间的单位
+     */
+    public void startTcpCheck(String checkId,String host,int port,long interval,long timeout,TimeUnit timeUnit){
+        scheduledExecutorService.scheduleAtFixedRate(()->{
+            Socket socket = new Socket();
+            try {
+                socket.connect(new InetSocketAddress(host,port), (int) timeout);
+                log.info("agent: socket connection success '"+host+":"+port);
+                //TODO  将check状态变成passing,更新output
+                checkMapper.updateStatusToPassingByPrimaryKey(checkId);
+                checkMapper.updateOutputByPrimaryKey(checkId,"socket connection success '"+host+":"+port);
+            } catch (IOException e) {
+                log.warn("agent: socket connection failed '"+host+":"+port);
+                //TODO 将check状态变成failing，更新output
+                checkMapper.updateStatusToFailingByPrimaryKey(checkId);
+                checkMapper.updateOutputByPrimaryKey(checkId,"socket connection failed '"+host+":"+port);
+            }
+            //关闭socket
+            if(!socket.isClosed()) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        },0,interval,timeUnit);
     }
 }

@@ -139,4 +139,14 @@
     <select id="selectByServiceId" resultMap="BaseResultMap">
       select * from `check` where service_id = #{serviceId}
     </select>
+    <update id="updateStatusToPassingByPrimaryKey">
+      update `check` set status = 'passing' where check_id = #{checkId}
+    </update>
+  <update id="updateStatusToFailingByPrimaryKey">
+      update `check` set status = 'failing' where check_id = #{checkId}
+  </update>
+  <update id="updateOutputByPrimaryKey">
+    update `check` set `output` = #{output} where check_id = #{checkId}
+  </update>
+
 </mapper>

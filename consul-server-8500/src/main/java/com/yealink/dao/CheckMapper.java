@@ -1,6 +1,7 @@
 package com.yealink.dao;
 
 import com.yealink.entities.Check;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,4 +21,10 @@ public interface CheckMapper {
     List<Check> selectAll();
 
     List<Check> selectByServiceId(String serviceId);
+
+    int updateStatusToPassingByPrimaryKey(String checkId);
+
+    int updateStatusToFailingByPrimaryKey(String checkId);
+
+    int updateOutputByPrimaryKey(@Param("checkId") String checkId,@Param("output") String output);
 }

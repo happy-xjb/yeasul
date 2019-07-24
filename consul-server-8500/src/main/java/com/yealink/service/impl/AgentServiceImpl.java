@@ -9,6 +9,7 @@ import com.yealink.entities.ServiceName;
 import com.yealink.entities.ServiceTag;
 import com.yealink.service.AgentService;
 import com.yealink.utils.CheckUtil;
+import com.yealink.utils.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -92,8 +94,7 @@ public class AgentServiceImpl implements AgentService {
         log.info("【服务注册成功】"+newService);
 
         //TODO 如果服务注册时有检查信息，开启一个线程检查此服务的健康状态
-        checkUtil.startCheck(newService);
-
+        checkUtil.startHttpCheck(newService);
     }
 
     @Override
@@ -128,7 +129,32 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public void agentCheckRegister(NewCheck newCheck) {
+        //TODO 将check信息插入数据库
+        com.yealink.entities.Check check_db = new com.yealink.entities.Check();
+        BeanUtils.copyProperties(newCheck,check_db);
+        check_db.setCheckId(newCheck.getId());
+//        check_db.setServiceName("需要得到服务名");
+        checkMapper.insertSelective(check_db);
 
+        //判断检查类型
+        if(newCheck.getTcp()!=null){
+            String tcp = newCheck.getTcp();
+            String[] strings = tcp.split(":");
+            String host = strings[0];
+            int port = Integer.parseInt(strings[1]);
+            String interval = newCheck.getInterval();
+            long interval_time = TimeUtil.getTimeNum(interval);
+            TimeUnit interval_unit = TimeUtil.getTimeUnit(interval);
+            long timeout = 0;
+            String timeout_str = newCheck.getTimeout();
+            if(timeout_str ==null|| timeout_str.equals(""))   timeout= TimeUnit.MILLISECONDS.convert(interval_time,interval_unit);
+            else{
+                TimeUnit timeout_unit = TimeUtil.getTimeUnit(timeout_str);
+                long timeout_time = TimeUtil.getTimeNum(timeout_str);
+                timeout=TimeUnit.MILLISECONDS.convert(timeout_time,timeout_unit);
+            }
+            checkUtil.startTcpCheck(newCheck.getId(),host,port,interval_time,timeout,interval_unit);
+        }
     }
 
 
