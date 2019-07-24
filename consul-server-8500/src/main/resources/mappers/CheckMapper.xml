@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yealink.dao.CheckMapper">
+  <resultMap id="BaseResultMap" type="com.yealink.entities.Check">
+    <!--@mbg.generated-->
+    <id column="check_id" jdbcType="VARCHAR" property="checkId" />
+    <result column="node" jdbcType="VARCHAR" property="node" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+    <result column="output" jdbcType="VARCHAR" property="output" />
+    <result column="service_id" jdbcType="VARCHAR" property="serviceId" />
+    <result column="service_name" jdbcType="VARCHAR" property="serviceName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    check_id, node, `name`, `status`, notes, `output`, service_id, service_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from `check`
+    where check_id = #{checkId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!--@mbg.generated-->
+    delete from `check`
+    where check_id = #{checkId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yealink.entities.Check">
+    <!--@mbg.generated-->
+    insert into `check` (check_id, node, `name`,
+      `status`, notes, `output`, 
+      service_id, service_name)
+    values (#{checkId,jdbcType=VARCHAR}, #{node,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{notes,jdbcType=VARCHAR}, #{output,jdbcType=VARCHAR}, 
+      #{serviceId,jdbcType=VARCHAR}, #{serviceName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yealink.entities.Check">
+    <!--@mbg.generated-->
+    insert into `check`
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="checkId != null">
+        check_id,
+      </if>
+      <if test="node != null">
+        node,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="notes != null">
+        notes,
+      </if>
+      <if test="output != null">
+        `output`,
+      </if>
+      <if test="serviceId != null">
+        service_id,
+      </if>
+      <if test="serviceName != null">
+        service_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="checkId != null">
+        #{checkId,jdbcType=VARCHAR},
+      </if>
+      <if test="node != null">
+        #{node,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="output != null">
+        #{output,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceId != null">
+        #{serviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceName != null">
+        #{serviceName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yealink.entities.Check">
+    <!--@mbg.generated-->
+    update `check`
+    <set>
+      <if test="node != null">
+        node = #{node,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="output != null">
+        `output` = #{output,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceId != null">
+        service_id = #{serviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceName != null">
+        service_name = #{serviceName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where check_id = #{checkId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yealink.entities.Check">
+    <!--@mbg.generated-->
+    update `check`
+    set node = #{node,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=VARCHAR},
+      notes = #{notes,jdbcType=VARCHAR},
+      `output` = #{output,jdbcType=VARCHAR},
+      service_id = #{serviceId,jdbcType=VARCHAR},
+      service_name = #{serviceName,jdbcType=VARCHAR}
+    where check_id = #{checkId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select * from `check`
+  </select>
+    <select id="selectByServiceId" resultMap="BaseResultMap">
+      select * from `check` where service_id = #{serviceId}
+    </select>
+</mapper>

@@ -1,0 +1,22 @@
+server:
+  port: 80
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://62.234.44.124:3306/consul_schema
+    username: root
+    password: 123456
+  application:
+    name: spring-cloud-consul-consumer
+  cloud:
+    consul:
+      port: 8500
+      host: localhost
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+        healthCheckPath: /health
+        healthCheckInterval: 30s
+        healthCheckCriticalTimeout: 3m
+        tags: version=2.0.253.7,environment=production
+        register: false

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="consul-server-8500" />
+        <module name="dept-consumer-80" />
+        <module name="dept-provider-8001" />
+        <module name="dept-provider-8002" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="consul-server-8500" target="1.8" />
+      <module name="dept-consumer-80" target="1.8" />
+      <module name="dept-provider-8001" target="1.8" />
+      <module name="dept-provider-8002" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="consul-server-8500" options="-parameters" />
+      <module name="dept-consumer-80" options="-parameters" />
+      <module name="dept-provider-8001" options="-parameters" />
+      <module name="dept-provider-8002" options="-parameters" />
+    </option>
+  </component>
+</project>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" addBOMForNewFiles="with NO BOM">
+    <file url="file://$PROJECT_DIR$/consul-server-8500" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dept-consumer-80" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dept-provider-8001" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dept-provider-8002" charset="UTF-8" />
+  </component>
+</project>
