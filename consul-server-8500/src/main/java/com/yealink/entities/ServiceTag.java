@@ -13,6 +13,8 @@ public class ServiceTag {
      * 标签值
      */
     private String value;
-
+    /**
+     * 服务实例ID
+     */
     private String serviceId;
 }

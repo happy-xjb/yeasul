@@ -21,5 +21,8 @@ public class ServiceInstance {
     */
     private String address;
 
+    /**
+     * 服务实例端口号
+     */
     private Integer port;
 }

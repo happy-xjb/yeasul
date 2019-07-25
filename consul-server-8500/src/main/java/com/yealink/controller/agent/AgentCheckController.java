@@ -9,6 +9,7 @@ import com.yealink.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -28,7 +29,7 @@ public class AgentCheckController extends AgentController {
     }
 
     @PutMapping("/check/register")
-    public void agentCheckRegister(NewCheck newCheck){
+    public void agentCheckRegister(@RequestBody NewCheck newCheck){
         agentService.agentCheckRegister(newCheck);
     }
 

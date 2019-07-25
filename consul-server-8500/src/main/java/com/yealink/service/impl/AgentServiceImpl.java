@@ -134,6 +134,12 @@ public class AgentServiceImpl implements AgentService {
         BeanUtils.copyProperties(newCheck,check_db);
         check_db.setCheckId(newCheck.getId());
 //        check_db.setServiceName("需要得到服务名");
+        ServiceInstance serviceInstance = serviceInstanceMapper.selectByPrimaryKey(newCheck.getServiceId());
+        if(serviceInstance!=null){
+            check_db.setServiceName(serviceInstance.getService());
+            check_db.setName("Service '"+serviceInstance.getService()+"' check");
+        }
+
         checkMapper.insertSelective(check_db);
 
         //判断检查类型

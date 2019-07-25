@@ -70,7 +70,7 @@ public class CheckUtil {
                     String json = EntityUtils.toString(entity);
                     ActuatorHealthVO actuatorHealthVO = gson.fromJson(json, ActuatorHealthVO.class);
                     if (actuatorHealthVO.getStatus().equals("UP")) {
-                        check.setOutput("HTTP GET " + url + response.getStatusLine()).setStatus("passing");
+                        check.setOutput("HTTP GET " + url + " "+ response.getStatusLine()).setStatus("passing");
                         checkMapper.updateByPrimaryKey(check);
                     }
                 }
