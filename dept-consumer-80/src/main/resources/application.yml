@@ -20,3 +20,6 @@ spring:
         healthCheckCriticalTimeout: 3m
         tags: version=2.0.253.7,environment=production
         register: false
+  http:
+    converters:
+      preferred-json-mapper: gson #必须使用gson，否则健康检查会出错

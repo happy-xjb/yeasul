@@ -30,6 +30,7 @@ public class AgentCheckController extends AgentController {
 
     @PutMapping("/check/register")
     public void agentCheckRegister(@RequestBody NewCheck newCheck){
+        System.out.println("传入的newcheck为"+newCheck);
         agentService.agentCheckRegister(newCheck);
     }
 

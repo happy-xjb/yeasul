@@ -129,6 +129,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public void agentCheckRegister(NewCheck newCheck) {
+        System.out.println("传入service层的newcheck"+newCheck);
         //TODO 将check信息插入数据库
         com.yealink.entities.Check check_db = new com.yealink.entities.Check();
         BeanUtils.copyProperties(newCheck,check_db);
@@ -142,24 +143,30 @@ public class AgentServiceImpl implements AgentService {
 
         checkMapper.insertSelective(check_db);
 
+        //得到循环时间和超时时间
+        String interval = newCheck.getInterval();
+        long interval_time = TimeUtil.getTimeNum(interval);
+        TimeUnit interval_unit = TimeUtil.getTimeUnit(interval);
+        long timeout = 0;
+        String timeout_str = newCheck.getTimeout();
+        if(timeout_str ==null|| timeout_str.equals(""))   timeout= TimeUnit.MILLISECONDS.convert(interval_time,interval_unit);
+        else{
+            TimeUnit timeout_unit = TimeUtil.getTimeUnit(timeout_str);
+            long timeout_time = TimeUtil.getTimeNum(timeout_str);
+            timeout=TimeUnit.MILLISECONDS.convert(timeout_time,timeout_unit);
+        }
+
         //判断检查类型
         if(newCheck.getTcp()!=null){
             String tcp = newCheck.getTcp();
             String[] strings = tcp.split(":");
             String host = strings[0];
             int port = Integer.parseInt(strings[1]);
-            String interval = newCheck.getInterval();
-            long interval_time = TimeUtil.getTimeNum(interval);
-            TimeUnit interval_unit = TimeUtil.getTimeUnit(interval);
-            long timeout = 0;
-            String timeout_str = newCheck.getTimeout();
-            if(timeout_str ==null|| timeout_str.equals(""))   timeout= TimeUnit.MILLISECONDS.convert(interval_time,interval_unit);
-            else{
-                TimeUnit timeout_unit = TimeUtil.getTimeUnit(timeout_str);
-                long timeout_time = TimeUtil.getTimeNum(timeout_str);
-                timeout=TimeUnit.MILLISECONDS.convert(timeout_time,timeout_unit);
-            }
+
             checkUtil.startTcpCheck(newCheck.getId(),host,port,interval_time,timeout,interval_unit);
+        }
+        else if(newCheck.getHttp()!=null){
+            checkUtil.startHttpCheck(check_db.getCheckId(),newCheck.getHttp(),interval_time,timeout,interval_unit);
         }
     }
 
