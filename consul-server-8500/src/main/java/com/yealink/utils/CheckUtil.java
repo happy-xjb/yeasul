@@ -1,13 +1,9 @@
 package com.yealink.utils;
 
 import com.ecwid.consul.v1.agent.model.NewService;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.filter.FilteringParserDelegate;
-import com.fasterxml.jackson.core.util.JsonParserSequence;
 import com.google.gson.Gson;
 import com.yealink.dao.CheckMapper;
 import com.yealink.entities.Check;
-import com.yealink.vo.ActuatorHealthVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
@@ -42,6 +38,10 @@ public class CheckUtil {
     @Autowired
     private ScheduledExecutorService scheduledExecutorService;
 
+    /**
+     * 为新注册的服务开启检查
+     * @param newService    新注册的服务
+     */
     public void startHttpCheck(NewService newService){
         NewService.Check newServiceCheck = newService.getCheck();
         String url = newServiceCheck.getHttp();
@@ -95,10 +95,8 @@ public class CheckUtil {
         System.out.println("执行至此");
     }
 
-    //启动TCP检查
-
     /**
-     *
+     * 启动Tcp健康检查
      * @param checkId   检查id
      * @param host  ip地址
      * @param port  端口号
