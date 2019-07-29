@@ -4,9 +4,7 @@ import com.ecwid.consul.v1.agent.model.Check;
 import com.ecwid.consul.v1.agent.model.NewCheck;
 import com.ecwid.consul.v1.agent.model.NewService;
 import com.yealink.dao.*;
-import com.yealink.entities.ServiceInstance;
-import com.yealink.entities.ServiceName;
-import com.yealink.entities.ServiceTag;
+import com.yealink.entities.*;
 import com.yealink.service.AgentService;
 import com.yealink.utils.CheckUtil;
 import com.yealink.utils.TimeUtil;
@@ -14,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -24,6 +23,12 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class AgentServiceImpl implements AgentService {
+    @Value("${consul.debug-config.bind-address}")
+    String nodeAddress;
+
+    @Autowired
+    RegisterInfoMapper registerInfoMapper;
+
     @Autowired
     CheckMapper checkMapper;
 
@@ -47,10 +52,21 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public Map<String, com.ecwid.consul.v1.agent.model.Service> getAgentServices() {
-
-        Map<String, com.ecwid.consul.v1.agent.model.Service> map = new HashMap<String, com.ecwid.consul.v1.agent.model.Service>();
-        List<ServiceInstance> serviceInstances = serviceInstanceMapper.selectAll();
-        for(ServiceInstance serviceInstance : serviceInstances){
+        Node node = nodeMapper.selectByAddress(nodeAddress);
+        List<String> serviceIdList = registerInfoMapper.selectServiceIdByDatacenter(node.getDatacenter());
+        Map<String, com.ecwid.consul.v1.agent.model.Service> map = new HashMap<>();
+//        List<ServiceInstance> serviceInstances = serviceInstanceMapper.selectAll();
+//        for(ServiceInstance serviceInstance : serviceInstances){
+//            com.ecwid.consul.v1.agent.model.Service service = new com.ecwid.consul.v1.agent.model.Service();
+//            service.setAddress(serviceInstance.getAddress());
+//            service.setId(serviceInstance.getServiceInstanceId());
+//            service.setPort(serviceInstance.getPort());
+//            service.setService(serviceInstance.getService());
+//            service.setTags(serviceTagMapper.selectByServiceId(serviceInstance.getServiceInstanceId()));
+//            map.put(serviceInstance.getServiceInstanceId(),service);
+//        }
+        for(String serviceId : serviceIdList){
+            ServiceInstance serviceInstance = serviceInstanceMapper.selectByPrimaryKey(serviceId);
             com.ecwid.consul.v1.agent.model.Service service = new com.ecwid.consul.v1.agent.model.Service();
             service.setAddress(serviceInstance.getAddress());
             service.setId(serviceInstance.getServiceInstanceId());
@@ -91,6 +107,14 @@ public class AgentServiceImpl implements AgentService {
             serviceTag.setValue(tag);
             serviceTagMapper.insert(serviceTag);
         }
+
+        //将注册信息写入数据库
+        Node node = nodeMapper.selectByAddress(nodeAddress);
+        RegisterInfo registerInfo = new RegisterInfo();
+        registerInfo.setNodeId(node.getNodeId());
+        registerInfo.setServiceInstanceId(newService.getId());
+        registerInfo.setDatacenter(node.getDatacenter());
+        registerInfoMapper.insert(registerInfo);
         log.info("【服务注册成功】"+newService);
 
         //TODO 如果服务注册时有检查信息，开启一个线程检查此服务的健康状态

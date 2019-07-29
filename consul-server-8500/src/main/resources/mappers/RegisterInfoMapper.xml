@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yealink.dao.RegisterInfoMapper">
+  <resultMap id="BaseResultMap" type="com.yealink.entities.RegisterInfo">
+    <!--@mbg.generated-->
+    <result column="service_instance_id" jdbcType="VARCHAR" property="serviceInstanceId" />
+    <result column="node_id" jdbcType="VARCHAR" property="nodeId" />
+    <result column="datacenter" jdbcType="VARCHAR" property="datacenter" />
+  </resultMap>
+  <insert id="insert" parameterType="com.yealink.entities.RegisterInfo">
+    <!--@mbg.generated-->
+    insert into register_info (service_instance_id, node_id, datacenter
+      )
+    values (#{serviceInstanceId,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR}, #{datacenter,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yealink.entities.RegisterInfo">
+    <!--@mbg.generated-->
+    insert into register_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="serviceInstanceId != null">
+        service_instance_id,
+      </if>
+      <if test="nodeId != null">
+        node_id,
+      </if>
+      <if test="datacenter != null">
+        datacenter,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="serviceInstanceId != null">
+        #{serviceInstanceId,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeId != null">
+        #{nodeId,jdbcType=VARCHAR},
+      </if>
+      <if test="datacenter != null">
+        #{datacenter,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+    <select id="selectServiceIdByDatacenter" resultType="java.lang.String">
+      select service_instance_id from register_info where datacenter =#{datacenter}
+    </select>
+</mapper>

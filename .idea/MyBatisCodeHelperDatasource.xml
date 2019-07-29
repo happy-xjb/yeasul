@@ -35,6 +35,15 @@
                 </TableGenerateConfig>
               </value>
             </entry>
+            <entry key="consul_schema:register_info">
+              <value>
+                <TableGenerateConfig>
+                  <option name="javaModelName" value="RegisterInfo" />
+                  <option name="moduleName" value="consul-server-8500" />
+                  <option name="useActualColumnName" value="false" />
+                </TableGenerateConfig>
+              </value>
+            </entry>
           </map>
         </option>
         <option name="useLomBokOnModel" value="true" />

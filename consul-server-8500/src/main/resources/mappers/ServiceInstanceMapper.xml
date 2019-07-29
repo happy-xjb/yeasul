@@ -93,4 +93,5 @@
   <select id="selectByServiceName" resultMap="BaseResultMap">
     select * from service_instance where service = #{serviceName}
   </select>
+
 </mapper>

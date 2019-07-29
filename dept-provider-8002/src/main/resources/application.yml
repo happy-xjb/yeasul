@@ -3,17 +3,17 @@ spring:
     name: dept-provider-8002
   cloud:
     consul:
-      host: 127.0.0.1
+      host: 10.83.2.93
       port: 8500
       discovery:
         service-name: dept-provider
-        ip-address: 127.0.0.1
+        ip-address: 10.83.2.93
         register-health-check: true
         health-check-path: /actuator/health
         health-check-interval: 5s
         health-check-timeout: 5s
         prefer-ip-address: true
-        tags: {"version=1.0","author=xujianbo"}
+        tags: ["version=1.0","author=hmy"]
 
   datasource:
     driver-class-name: com.mysql.jdbc.Driver

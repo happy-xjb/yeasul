@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class CheckUtil {
+    @Value("${consul.config.node-name}")
+    String nodeName;
+
     @Autowired
     private Gson gson;
 
@@ -55,7 +59,8 @@ public class CheckUtil {
         Check check = new Check().setCheckId("service:"+newService.getId())
                 .setName("Service '"+newService.getName()+"' check")
                 .setServiceId(newService.getId())
-                .setServiceName(newService.getName());
+                .setServiceName(newService.getName())
+                .setNode(nodeName);
 
         //检查check是否已经存在
         if(checkMapper.selectByPrimaryKey(check.getCheckId())==null)    checkMapper.insertSelective(check);
@@ -66,7 +71,6 @@ public class CheckUtil {
             RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout((int) TimeUnit.MILLISECONDS.convert(timeout_timeNum, timeout_timeUnit))
                     .setConnectionRequestTimeout((int) TimeUnit.MILLISECONDS.convert(timeout_timeNum, timeout_timeUnit)).build();
             HttpGet httpGet = new HttpGet(url);
-            System.out.println("传入的url为："+url);
             httpGet.setConfig(requestConfig);
             CloseableHttpResponse response = null;
             try {
@@ -75,11 +79,8 @@ public class CheckUtil {
                 check.setOutput("GET " + url +" " + response.getStatusLine());
                 if (entity != null) {
                     String json = EntityUtils.toString(entity);
-                    System.out.println("接收到json为："+json);
-//                    ActuatorHealthVO actuatorHealthVO = gson.fromJson(json, ActuatorHealthVO.class);
                     Health health = gson.fromJson(json, Health.class);
-                    System.out.println("转成的health为："+health);
-                    if (health.getStatus().equals(Status.UP)) {
+                    if (health.getStatus().getCode().equals(Status.UP.toString())) {
                         check.setOutput("HTTP GET " + url + " "+ response.getStatusLine()).setStatus("passing");
                         checkMapper.updateByPrimaryKey(check);
                     }
@@ -92,7 +93,6 @@ public class CheckUtil {
             }
         }, 0, interval_timeNum, interval_timeUnit);
 
-        System.out.println("执行至此");
     }
 
     /**
@@ -158,7 +158,7 @@ public class CheckUtil {
 //                    ActuatorHealthVO actuatorHealthVO = gson.fromJson(json, ActuatorHealthVO.class);
                     Health health = gson.fromJson(json, Health.class);
                     System.out.println("转成的health为"+health);
-                    if(health.getStatus().getCode().equals(Status.UP)){
+                    if(health.getStatus().getCode().equals(Status.UP.toString())){
                         check.setOutput("HTTP GET " + checkUrl + " "+ response.getStatusLine()).setStatus("passing");
                         System.out.println("返回正确");
                         checkMapper.updateByPrimaryKey(check);

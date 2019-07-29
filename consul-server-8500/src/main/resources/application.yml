@@ -15,3 +15,9 @@ mybatis:
   type-aliases-package: com.yealink.entities
   configuration:
     map-underscore-to-camel-case: true
+consul:
+  debug-config:
+    bind-address: 10.83.2.93
+  config:
+    node-name: myNode1
+    datacenter: CN_DC1
