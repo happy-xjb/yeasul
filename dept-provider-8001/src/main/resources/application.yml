@@ -1,18 +1,19 @@
 spring:
   application:
-    name: dept-provider-8001-2dsa14
+    name: pay-provider-8001
   cloud:
     consul:
       host: 127.0.0.1
       port: 8500
       discovery:
-        service-name: dept-provider-1
+        service-name: pay-provider
         ip-address: 127.0.0.1
         register-health-check: true
         health-check-path: /actuator/health
         health-check-interval: 5s
         health-check-timeout: 5s
         prefer-ip-address: true
+        tags: ["version=1.0","author=Happy-xjb"]
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://62.234.44.124:3306/consul_schema
@@ -21,5 +22,12 @@ spring:
   http:
     converters:
       preferred-json-mapper: gson #必须使用gson，否则健康检查会出错
+  mvc:
+    view:
+      prefix: /templates
+  thymeleaf:
+    cache: false
+    mode: HTML
+
 server:
   port: 8001

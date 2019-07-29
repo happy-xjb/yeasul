@@ -3,6 +3,7 @@ package com.yealink.dao;
 import com.yealink.entities.ServiceTag;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ServiceTagMapper {
     int insert(ServiceTag record);
@@ -14,4 +15,5 @@ public interface ServiceTagMapper {
     int deleteAllByServiceId(String serviceId);
 
     List<String> selectByServiceName(String serviceName);
+
 }

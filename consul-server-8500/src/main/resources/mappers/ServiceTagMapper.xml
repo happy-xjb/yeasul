@@ -47,6 +47,7 @@
     delete from service_tag where service_id = #{serviceId}
   </delete>
   <select id="selectByServiceName" resultType="java.lang.String">
-    select * from service_tag where service = #{serviceName}
+    select value from service_tag where service = #{serviceName}
   </select>
+
 </mapper>

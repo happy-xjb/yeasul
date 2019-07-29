@@ -23,6 +23,7 @@ public class Self {
 //    @Data
     public static class Config {
 
+        
         @JsonProperty("Datacenter")
         private String datacenter;
 

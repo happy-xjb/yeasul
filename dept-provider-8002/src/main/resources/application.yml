@@ -13,6 +13,7 @@ spring:
         health-check-interval: 5s
         health-check-timeout: 5s
         prefer-ip-address: true
+        tags: {"version=1.0","author=xujianbo"}
 
   datasource:
     driver-class-name: com.mysql.jdbc.Driver

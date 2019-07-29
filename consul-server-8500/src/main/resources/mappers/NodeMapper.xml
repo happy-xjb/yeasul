@@ -6,10 +6,11 @@
     <id column="node_id" jdbcType="VARCHAR" property="nodeId" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="datacenter" jdbcType="VARCHAR" property="datacenter" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    node_id, `name`, address
+    node_id, `name`, address, datacenter
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -25,10 +26,10 @@
   </delete>
   <insert id="insert" parameterType="com.yealink.entities.Node">
     <!--@mbg.generated-->
-    insert into node (node_id, `name`, address
-      )
-    values (#{nodeId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}
-      )
+    insert into node (node_id, `name`, address, 
+      datacenter)
+    values (#{nodeId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{datacenter,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yealink.entities.Node">
     <!--@mbg.generated-->
@@ -43,6 +44,9 @@
       <if test="address != null">
         address,
       </if>
+      <if test="datacenter != null">
+        datacenter,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="nodeId != null">
@@ -53,6 +57,9 @@
       </if>
       <if test="address != null">
         #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="datacenter != null">
+        #{datacenter,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -66,6 +73,9 @@
       <if test="address != null">
         address = #{address,jdbcType=VARCHAR},
       </if>
+      <if test="datacenter != null">
+        datacenter = #{datacenter,jdbcType=VARCHAR},
+      </if>
     </set>
     where node_id = #{nodeId,jdbcType=VARCHAR}
   </update>
@@ -73,7 +83,8 @@
     <!--@mbg.generated-->
     update node
     set `name` = #{name,jdbcType=VARCHAR},
-      address = #{address,jdbcType=VARCHAR}
+      address = #{address,jdbcType=VARCHAR},
+      datacenter = #{datacenter,jdbcType=VARCHAR}
     where node_id = #{nodeId,jdbcType=VARCHAR}
   </update>
     <select id="selectByAddress" resultMap="BaseResultMap">
