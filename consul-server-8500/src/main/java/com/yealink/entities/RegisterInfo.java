@@ -18,4 +18,9 @@ public class RegisterInfo {
      * 数据中心名称
      */
     private String datacenter;
+
+    /**
+     * 服务名称
+     */
+    private String service;
 }

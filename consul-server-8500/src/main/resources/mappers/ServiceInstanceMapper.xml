@@ -93,5 +93,12 @@
   <select id="selectByServiceName" resultMap="BaseResultMap">
     select * from service_instance where service = #{serviceName}
   </select>
+  <select id="selectByServiceIdList" resultMap="BaseResultMap" parameterType="list">
+      select * from service_instance where
+      service_instance_id in
+        <foreach collection="list" item="serviceId" index="index" open="(" close=")" separator=",">
+          #{serviceId}
+        </foreach>
+  </select>
 
 </mapper>

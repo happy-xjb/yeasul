@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,9 @@ import java.util.concurrent.TimeUnit;
 public class AgentServiceImpl implements AgentService {
     @Value("${consul.debug-config.bind-address}")
     String nodeAddress;
+
+    @Value("${consul.config.datacenter}")
+    String datacenter;
 
     @Autowired
     RegisterInfoMapper registerInfoMapper;
@@ -138,10 +142,29 @@ public class AgentServiceImpl implements AgentService {
         //TODO 删除对应的check
     }
 
+    /**
+     * 返回本数据中心注册的所有的服务的检查
+     * @return
+     */
     @Override
     public Map<String, Check> getAgentChecks() {
-        List<com.yealink.entities.Check> checks = checkMapper.selectAll();
         Map<String,Check> map = new HashMap<>();
+//        List<com.yealink.entities.Check> checks = checkMapper.selectAll();
+//        for(com.yealink.entities.Check check: checks){
+//            Check checkVO = new Check();
+//            BeanUtils.copyProperties(check,checkVO);
+//            checkVO.setServiceTags(serviceTagMapper.selectByServiceId(check.getServiceId()));
+//            map.put(check.getCheckId(),checkVO);
+//        }
+        List<String> serviceIdList = registerInfoMapper.selectServiceIdByDatacenter(datacenter);
+        List<com.yealink.entities.Check> checks = new ArrayList<>();
+        for(String serviceId : serviceIdList){
+            List<com.yealink.entities.Check> checkList = checkMapper.selectByServiceId(serviceId);
+            for(com.yealink.entities.Check check : checkList){
+                checks.add(check);
+            }
+        }
+
         for(com.yealink.entities.Check check: checks){
             Check checkVO = new Check();
             BeanUtils.copyProperties(check,checkVO);

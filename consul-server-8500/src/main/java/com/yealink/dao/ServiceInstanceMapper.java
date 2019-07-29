@@ -21,4 +21,5 @@ public interface ServiceInstanceMapper {
 
     List<ServiceInstance> selectByServiceName(String serviceName);
 
+    List<ServiceInstance> selectByServiceIdList(List<String> list);
 }

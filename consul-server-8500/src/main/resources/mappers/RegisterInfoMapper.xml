@@ -6,13 +6,14 @@
     <result column="service_instance_id" jdbcType="VARCHAR" property="serviceInstanceId" />
     <result column="node_id" jdbcType="VARCHAR" property="nodeId" />
     <result column="datacenter" jdbcType="VARCHAR" property="datacenter" />
+    <result column="service" jdbcType="VARCHAR" property="service" />
   </resultMap>
   <insert id="insert" parameterType="com.yealink.entities.RegisterInfo">
     <!--@mbg.generated-->
-    insert into register_info (service_instance_id, node_id, datacenter
-      )
-    values (#{serviceInstanceId,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR}, #{datacenter,jdbcType=VARCHAR}
-      )
+    insert into register_info (service_instance_id, node_id, datacenter, 
+      service)
+    values (#{serviceInstanceId,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR}, #{datacenter,jdbcType=VARCHAR}, 
+      #{service,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yealink.entities.RegisterInfo">
     <!--@mbg.generated-->
@@ -27,6 +28,9 @@
       <if test="datacenter != null">
         datacenter,
       </if>
+      <if test="service != null">
+        service,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="serviceInstanceId != null">
@@ -38,9 +42,15 @@
       <if test="datacenter != null">
         #{datacenter,jdbcType=VARCHAR},
       </if>
+      <if test="service != null">
+        #{service,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
     <select id="selectServiceIdByDatacenter" resultType="java.lang.String">
       select service_instance_id from register_info where datacenter =#{datacenter}
     </select>
+  <select id="selectServiceIdListByDatacenterAndService" resultType="java.lang.String">
+    select service_instance_id from register_info where datacenter = #{datacenter} and service = #{service}
+  </select>
 </mapper>
