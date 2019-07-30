@@ -1,6 +1,7 @@
 package com.yealink.init;
 
 import com.yealink.dao.NodeMapper;
+import com.yealink.dao.RegisterInfoMapper;
 import com.yealink.entities.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,8 @@ public class NodeInit implements ApplicationRunner {
 
     @Autowired
     private NodeMapper nodeMapper;
+    @Autowired
+    RegisterInfoMapper registerInfoMapper;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -34,6 +37,13 @@ public class NodeInit implements ApplicationRunner {
             node.setDatacenter(datacenter);
             node.setName(nodeName);
             nodeMapper.insert(node);
+        }else{
+            Node node = nodeMapper.selectByAddress(address);
+            node.setName(nodeName);
+            node.setDatacenter(datacenter);
+            nodeMapper.updateByPrimaryKeySelective(node);
+            //数据库中注册信息更改，迁移到新的DC中
+            registerInfoMapper.updateDatacenterByNodeId(node.getNodeId(),datacenter);
         }
     }
 }

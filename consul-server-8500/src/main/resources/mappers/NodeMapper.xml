@@ -90,4 +90,10 @@
     <select id="selectByAddress" resultMap="BaseResultMap">
       select * from node where address = #{address}
     </select>
+    <select id="selectAllNodeNameInDatacenter" resultType="java.lang.String">
+      select name from node where datacenter = #{datacenter}
+    </select>
+  <select id="selectByNodeName" resultMap="BaseResultMap">
+    select * from node where name =#{nodeName}
+  </select>
 </mapper>

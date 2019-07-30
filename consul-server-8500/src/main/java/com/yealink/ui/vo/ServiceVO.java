@@ -7,6 +7,6 @@ import java.util.List;
 @Data
 public class ServiceVO {
     List<String> tags;
-    List<ServiceAndCheckVO> serviceAndCheckVOList;
+    List<NodeAndCheckVO> nodeAndCheckVOList;
 
 }

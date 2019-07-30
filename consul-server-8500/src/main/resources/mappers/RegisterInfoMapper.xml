@@ -53,4 +53,16 @@
   <select id="selectServiceIdListByDatacenterAndService" resultType="java.lang.String">
     select service_instance_id from register_info where datacenter = #{datacenter} and service = #{service}
   </select>
+  <select id="selectAllServiceInDatacenter" resultType="java.lang.String">
+    select distinct service from register_info where datacenter = #{datacenter}
+  </select>
+  <update id="updateDatacenterByNodeId">
+    update register_info set datacenter = #{datacenter} where node_id =#{node_id}
+  </update>
+  <select id="selectAllNodeIdByServiceInDatacenter" resultType="java.lang.String">
+    select distinct node_id from register_info where service = #{service} and datacenter=#{datacenter}
+  </select>
+  <select id="selectAllServiceIdByNodeIdAndDatacenter" resultType="java.lang.String">
+    select service_instance_id from register_info where node_id=#{nodeId} and datacenter=#{datacenter}
+  </select>
 </mapper>

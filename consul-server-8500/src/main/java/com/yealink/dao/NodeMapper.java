@@ -2,6 +2,8 @@ package com.yealink.dao;
 
 import com.yealink.entities.Node;
 
+import java.util.List;
+
 public interface NodeMapper {
     int deleteByPrimaryKey(String nodeId);
 
@@ -16,4 +18,8 @@ public interface NodeMapper {
     int updateByPrimaryKey(Node record);
 
     Node selectByAddress(String address);
+
+    List<String> selectAllNodeNameInDatacenter(String datacenter);
+
+    Node selectByNodeName(String nodeName);
 }

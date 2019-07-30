@@ -1,6 +1,7 @@
 package com.yealink.ui.service.impl;
 
 import com.yealink.ui.service.UiService;
+import com.yealink.ui.vo.NodeVO;
 import com.yealink.ui.vo.ServiceVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,5 +24,11 @@ public class UiServiceImplTest {
     public void getAllServiceDetails() {
         Map<String, ServiceVO> allServiceDetails = uiService.getAllServiceDetails();
         System.out.println(allServiceDetails);
+    }
+
+    @Test
+    public void getAllNodeDetails(){
+        Map<String, NodeVO> allNodeDetails = uiService.getAllNodeDetails();
+        System.out.println(allNodeDetails);
     }
 }

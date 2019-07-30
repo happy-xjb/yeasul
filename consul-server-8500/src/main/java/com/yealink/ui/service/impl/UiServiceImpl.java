@@ -1,14 +1,13 @@
 package com.yealink.ui.service.impl;
 
-import com.yealink.dao.CheckMapper;
-import com.yealink.dao.ServiceInstanceMapper;
-import com.yealink.dao.ServiceNameMapper;
-import com.yealink.dao.ServiceTagMapper;
+import com.yealink.dao.*;
+import com.yealink.entities.Check;
+import com.yealink.entities.Node;
 import com.yealink.entities.ServiceInstance;
 import com.yealink.ui.service.UiService;
-import com.yealink.ui.vo.ServiceAndCheckVO;
-import com.yealink.ui.vo.ServiceVO;
+import com.yealink.ui.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,26 +28,60 @@ public class UiServiceImpl implements UiService {
 
     @Autowired
     CheckMapper checkMapper;
+    @Autowired
+    RegisterInfoMapper registerInfoMapper;
+    @Autowired
+    NodeMapper nodeMapper;
+    @Value("${consul.config.datacenter}")
+    String datacenter;
 
     @Override
     public Map<String, ServiceVO> getAllServiceDetails() {
         Map<String,ServiceVO> map = new HashMap<>();
-        List<String> serviceNameList = serviceNameMapper.selectAll();
+//        List<String> serviceNameList = serviceNameMapper.selectAll();
+        List<String> serviceNameList = registerInfoMapper.selectAllServiceInDatacenter(datacenter);
         for(String serviceName:serviceNameList){
             ServiceVO serviceVO = new ServiceVO();
             serviceVO.setTags(serviceTagMapper.selectByServiceName(serviceName));
-            List<ServiceAndCheckVO> serviceAndCheckVOList = new ArrayList<>();
-            List<ServiceInstance> serviceInstanceList = serviceInstanceMapper.selectByServiceName(serviceName);
-            for(ServiceInstance serviceInstance : serviceInstanceList){
-                ServiceAndCheckVO serviceAndCheckVO = new ServiceAndCheckVO();
-                serviceAndCheckVO.setServiceInstance(serviceInstance);
-                serviceAndCheckVO.setChecks(checkMapper.selectByServiceId(serviceInstance.getServiceInstanceId()));
-                serviceAndCheckVO.setTags(serviceTagMapper.selectByServiceId(serviceInstance.getServiceInstanceId()));
-                serviceAndCheckVOList.add(serviceAndCheckVO);
+            List<NodeAndCheckVO> nodeAndCheckVOList = new ArrayList<>();
+            List<String> nodeIdList = registerInfoMapper.selectAllNodeIdByServiceInDatacenter(serviceName, datacenter);
+            for(String nodeId : nodeIdList){
+                NodeAndCheckVO nodeAndCheckVO = new NodeAndCheckVO();
+                Node node = nodeMapper.selectByPrimaryKey(nodeId);
+                nodeAndCheckVO.setNode(node);
+                List<Check> checkList = checkMapper.selectAllByNodeNameAndService(node.getName(), serviceName);
+
+                nodeAndCheckVO.setCheckList(checkList);
+                nodeAndCheckVOList.add(nodeAndCheckVO);
             }
-            serviceVO.setServiceAndCheckVOList(serviceAndCheckVOList);
+
+            serviceVO.setNodeAndCheckVOList(nodeAndCheckVOList);
             map.put(serviceName,serviceVO);
         }
+        return map;
+    }
+
+    @Override
+    public Map<String, NodeVO> getAllNodeDetails() {
+        Map<String,NodeVO> map = new HashMap<>();
+        List<String> nodeNameList = nodeMapper.selectAllNodeNameInDatacenter(datacenter);
+        for(String nodeName : nodeNameList){
+            NodeVO nodeVO = new NodeVO();
+            Node node = nodeMapper.selectByNodeName(nodeName);
+            nodeVO.setNode(node);
+            List<ServiceWithTagsVO> serviceWithTagsVOList = new ArrayList<>();
+            List<String> serviceIdList = registerInfoMapper.selectAllServiceIdByNodeIdAndDatacenter(node.getNodeId(), datacenter);
+            for(String serviceId : serviceIdList){
+                ServiceWithTagsVO serviceWithTagsVO = new ServiceWithTagsVO();
+                serviceWithTagsVO.setServiceInstance(serviceInstanceMapper.selectByPrimaryKey(serviceId));
+                serviceWithTagsVO.setTags(serviceTagMapper.selectByServiceId(serviceId));
+                serviceWithTagsVOList.add(serviceWithTagsVO);
+            }
+            nodeVO.setServiceWithTagsVOList(serviceWithTagsVOList);
+            nodeVO.setCheckList(checkMapper.selectAllByNodeName(nodeName));
+            map.put(nodeName,nodeVO);
+        }
+
         return map;
     }
 }
