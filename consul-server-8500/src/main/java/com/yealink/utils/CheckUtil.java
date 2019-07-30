@@ -96,10 +96,10 @@ public class CheckUtil {
                     }
                 }
                 log.info("[Service] check pass "+check);
-            } catch (IOException e) {
-                log.warn("【服务异常】" + check);
-                check.setStatus("failing").setOutput("HTTP GET " + url + " "+ response.getStatusLine());
+            } catch (Exception e) {
+                check.setStatus("failing").setOutput("HTTP GET " + url + " "+ "refused");
                 checkMapper.updateByPrimaryKey(check);
+                log.warn("【服务异常】" + check);
             }
         }, 0, interval_timeNum, interval_timeUnit);
 
@@ -185,10 +185,10 @@ public class CheckUtil {
                     }
                 }
                 log.info("[Service] check pass "+check);
-            } catch (IOException e) {
-                log.warn("【服务异常】" + check);
-                check.setStatus("failing").setOutput("服务异常");
+            } catch (Exception e) {
+                check.setStatus("failing").setOutput("HTTP GET " + checkUrl + " "+ "refused");
                 checkMapper.updateByPrimaryKey(check);
+                log.warn("【服务异常】" + check);
             }
         },0,interval,timeUnit);
     }
