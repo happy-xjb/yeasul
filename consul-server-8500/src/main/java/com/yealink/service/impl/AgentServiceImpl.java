@@ -30,6 +30,9 @@ public class AgentServiceImpl implements AgentService {
     @Value("${consul.config.datacenter}")
     String datacenter;
 
+    @Value("${consul.config.node-name}")
+    String nodeName;
+
     @Autowired
     RegisterInfoMapper registerInfoMapper;
 
@@ -53,6 +56,9 @@ public class AgentServiceImpl implements AgentService {
 
     @Autowired
     NodeMapper nodeMapper;
+
+    @Autowired
+    CheckInfoMapper checkInfoMapper;
 
     @Override
     public Map<String, com.ecwid.consul.v1.agent.model.Service> getAgentServices() {
@@ -216,6 +222,13 @@ public class AgentServiceImpl implements AgentService {
         else if(newCheck.getHttp()!=null){
             checkUtil.startHttpCheck(check_db.getCheckId(),newCheck.getHttp(),interval_time,timeout,interval_unit);
         }
+
+        //将checkInfo信息持久化入数据库，比如url，interval,timeout
+        CheckInfo checkInfo = new CheckInfo();
+        checkInfo.setTimeout(newCheck.getTimeout()).setNode(nodeName).setInterval(newCheck.getInterval()).setCheckId(newCheck.getId());
+        if(newCheck.getHttp()!=null&&!newCheck.getHttp().equals(""))    checkInfo.setKind("http").setUrl(newCheck.getHttp());
+        else if(newCheck.getTcp()!=null&&!newCheck.getTcp().equals("")) checkInfo.setKind("tcp").setUrl(newCheck.getTcp());
+        checkInfoMapper.insertSelective(checkInfo);
     }
 
 

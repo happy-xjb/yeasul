@@ -26,6 +26,15 @@
         </option>
         <option name="tableGenerateConfigs">
           <map>
+            <entry key="consul_schema:check_info">
+              <value>
+                <TableGenerateConfig>
+                  <option name="javaModelName" value="CheckInfo" />
+                  <option name="moduleName" value="consul-server-8500" />
+                  <option name="useActualColumnName" value="false" />
+                </TableGenerateConfig>
+              </value>
+            </entry>
             <entry key="consul_schema:node">
               <value>
                 <TableGenerateConfig>

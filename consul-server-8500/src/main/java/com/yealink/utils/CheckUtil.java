@@ -2,8 +2,10 @@ package com.yealink.utils;
 
 import com.ecwid.consul.v1.agent.model.NewService;
 import com.google.gson.Gson;
+import com.yealink.dao.CheckInfoMapper;
 import com.yealink.dao.CheckMapper;
 import com.yealink.entities.Check;
+import com.yealink.entities.CheckInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
@@ -42,6 +44,9 @@ public class CheckUtil {
     @Autowired
     private ScheduledExecutorService scheduledExecutorService;
 
+    @Autowired
+    private CheckInfoMapper checkInfoMapper;
+
     /**
      * 为新注册的服务开启检查
      * @param newService    新注册的服务
@@ -62,6 +67,11 @@ public class CheckUtil {
                 .setServiceName(newService.getName())
                 .setNode(nodeName);
 
+        //Check信息持久化，持久化url，interval,timeout等等到数据库
+        CheckInfo checkInfo = new CheckInfo();
+        checkInfo.setCheckId(check.getCheckId()).setInterval(newServiceCheck.getInterval()).setKind("http").setNode(nodeName).setTimeout(newServiceCheck.getTimeout()).setUrl(url);
+        //检查checkInfo是否已经存在
+        if(checkInfoMapper.selectByPrimaryKey(checkInfo.getCheckId())==null)    checkInfoMapper.insertSelective(checkInfo);
         //检查check是否已经存在
         if(checkMapper.selectByPrimaryKey(check.getCheckId())==null)    checkMapper.insertSelective(check);
         int oldValue = 1;    //设定check初始状态为1，代表passing
@@ -88,7 +98,7 @@ public class CheckUtil {
                 log.info("[Service] check pass "+check);
             } catch (IOException e) {
                 log.warn("【服务异常】" + check);
-                check.setStatus("failing").setOutput("服务异常");
+                check.setStatus("failing").setOutput("HTTP GET " + url + " "+ response.getStatusLine());
                 checkMapper.updateByPrimaryKey(check);
             }
         }, 0, interval_timeNum, interval_timeUnit);
@@ -131,6 +141,21 @@ public class CheckUtil {
     }
 
     /**
+     * 启动Tcp健康检查
+     * @param checkId   检查id
+     * @param url   检查url
+     * @param interval  循环检查时间，字符串，带单位
+     * @param timeout   超时时间，字符串，带单位
+     */
+    public void startTcpCheck(String checkId,String url,String interval,String timeout){
+        String[] s = url.split(":");
+        String host = s[0];
+        int port = Integer.parseInt(s[1]);
+        long timeout_ms = TimeUnit.MILLISECONDS.convert(TimeUtil.getTimeNum(timeout), TimeUtil.getTimeUnit(timeout));
+        startTcpCheck(checkId,host,port,TimeUtil.getTimeNum(interval),timeout_ms,TimeUtil.getTimeUnit(interval));
+    }
+
+    /**
      * 启动HTTP检查，使用GET请求
      * @param checkId   checkId
      * @param checkUrl  检查的URL路径
@@ -140,12 +165,10 @@ public class CheckUtil {
      */
     public void startHttpCheck(String checkId,String checkUrl,long interval,long timeout,TimeUnit timeUnit){
         Check check = checkMapper.selectByPrimaryKey(checkId);
-        System.out.println("传入util的check"+check);
         //开启定时任务
         scheduledExecutorService.scheduleAtFixedRate(()->{
             RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout((int) timeout).setConnectTimeout((int) timeout).build();
             HttpGet httpGet = new HttpGet(checkUrl);
-            System.out.println("传入的checkurl为："+checkUrl);
             httpGet.setConfig(requestConfig);
             CloseableHttpResponse response =null;
             try {
@@ -154,13 +177,10 @@ public class CheckUtil {
                 check.setOutput("GET " + checkUrl +" " + response.getStatusLine());
                 if(entity != null){
                     String json = EntityUtils.toString(entity);
-                    System.out.println("返回的json为："+json);
 //                    ActuatorHealthVO actuatorHealthVO = gson.fromJson(json, ActuatorHealthVO.class);
                     Health health = gson.fromJson(json, Health.class);
-                    System.out.println("转成的health为"+health);
                     if(health.getStatus().getCode().equals(Status.UP.toString())){
                         check.setOutput("HTTP GET " + checkUrl + " "+ response.getStatusLine()).setStatus("passing");
-                        System.out.println("返回正确");
                         checkMapper.updateByPrimaryKey(check);
                     }
                 }
@@ -171,5 +191,21 @@ public class CheckUtil {
                 checkMapper.updateByPrimaryKey(check);
             }
         },0,interval,timeUnit);
+    }
+
+    /**
+     * 启动HTTP健康检查
+     * @param checkId   检查Id
+     * @param checkUrl  检查Url
+     * @param interval  循环检查时间，带单位的字符串
+     * @param timeout   超时时间，带单位的字符串
+     */
+    public void startHttpCheck(String checkId,String checkUrl,String interval,String timeout){
+        long interval_num = TimeUtil.getTimeNum(interval);
+        TimeUnit interval_unit = TimeUtil.getTimeUnit(interval);
+        long timeout_num = TimeUtil.getTimeNum(timeout);
+        TimeUnit timeout_unit = TimeUtil.getTimeUnit(timeout);
+        long timeout_ms = TimeUnit.MILLISECONDS.convert(timeout_num, timeout_unit);
+        startHttpCheck(checkId,checkUrl,interval_num,timeout_ms,interval_unit);
     }
 }
