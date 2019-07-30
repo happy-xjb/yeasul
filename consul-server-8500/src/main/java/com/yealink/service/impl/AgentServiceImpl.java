@@ -118,6 +118,7 @@ public class AgentServiceImpl implements AgentService {
         registerInfo.setNodeId(node.getNodeId());
         registerInfo.setServiceInstanceId(newService.getId());
         registerInfo.setDatacenter(node.getDatacenter());
+        registerInfo.setService(newService.getName());
         registerInfoMapper.insert(registerInfo);
         log.info("【服务注册成功】"+newService);
 
