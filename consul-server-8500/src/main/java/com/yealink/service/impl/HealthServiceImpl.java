@@ -29,6 +29,16 @@ public class HealthServiceImpl implements HealthService {
     @Override
     public List<com.ecwid.consul.v1.health.model.HealthService> getHealthServices(String service) {
         List<com.ecwid.consul.v1.health.model.HealthService> list = new ArrayList<>();
+        //调用集群中每一个
+
+
+        return list;
+    }
+
+    @Override
+    public List<com.ecwid.consul.v1.health.model.HealthService> getMyHealthServices(String service) {
+        List<com.ecwid.consul.v1.health.model.HealthService> list = new ArrayList<>();
+
         List<ServiceInstance> serviceInstances = serviceInstanceMapper.selectByServiceName(service);
         for(ServiceInstance serviceInstance: serviceInstances){
             //对于每个服务实例，都将生成对应的HealthService对象
