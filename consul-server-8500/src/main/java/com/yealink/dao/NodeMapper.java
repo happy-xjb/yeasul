@@ -1,6 +1,7 @@
 package com.yealink.dao;
 
 import com.yealink.entities.Node;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface NodeMapper {
     Node selectByAddress(String address);
 
     List<Node> selectAll();
+
+    Node selectByNameAndAddressAndDatacenter(@Param("name") String name ,@Param("address") String address,@Param("datacenter") String datacenter);
 }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yealink.dao.CheckInfoMapper">
+  <resultMap id="BaseResultMap" type="com.yealink.entities.CheckInfo">
+    <!--@mbg.generated-->
+    <id column="check_id" jdbcType="VARCHAR" property="checkId" />
+    <result column="kind" jdbcType="VARCHAR" property="kind" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="interval" jdbcType="VARCHAR" property="interval" />
+    <result column="timeout" jdbcType="VARCHAR" property="timeout" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    check_id, kind, url, `interval`, timeout
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from check_info
+    where check_id = #{checkId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!--@mbg.generated-->
+    delete from check_info
+    where check_id = #{checkId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yealink.entities.CheckInfo">
+    <!--@mbg.generated-->
+    insert into check_info (check_id, kind, url, 
+      `interval`, timeout)
+    values (#{checkId,jdbcType=VARCHAR}, #{kind,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
+      #{interval,jdbcType=VARCHAR}, #{timeout,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yealink.entities.CheckInfo">
+    <!--@mbg.generated-->
+    insert into check_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="checkId != null">
+        check_id,
+      </if>
+      <if test="kind != null">
+        kind,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="interval != null">
+        `interval`,
+      </if>
+      <if test="timeout != null">
+        timeout,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="checkId != null">
+        #{checkId,jdbcType=VARCHAR},
+      </if>
+      <if test="kind != null">
+        #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="interval != null">
+        #{interval,jdbcType=VARCHAR},
+      </if>
+      <if test="timeout != null">
+        #{timeout,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yealink.entities.CheckInfo">
+    <!--@mbg.generated-->
+    update check_info
+    <set>
+      <if test="kind != null">
+        kind = #{kind,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="interval != null">
+        `interval` = #{interval,jdbcType=VARCHAR},
+      </if>
+      <if test="timeout != null">
+        timeout = #{timeout,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where check_id = #{checkId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yealink.entities.CheckInfo">
+    <!--@mbg.generated-->
+    update check_info
+    set kind = #{kind,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      `interval` = #{interval,jdbcType=VARCHAR},
+      timeout = #{timeout,jdbcType=VARCHAR}
+    where check_id = #{checkId,jdbcType=VARCHAR}
+  </update>
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from check_info
+    </select>
+</mapper>

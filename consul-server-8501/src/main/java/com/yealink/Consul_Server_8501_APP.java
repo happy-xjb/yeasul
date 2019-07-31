@@ -17,7 +17,6 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:application.yml")
 public class Consul_Server_8501_APP
 {
-
     public static void main( String[] args )
     {
         SpringApplication.run(Consul_Server_8501_APP.class,args);

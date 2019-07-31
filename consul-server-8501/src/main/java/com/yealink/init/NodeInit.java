@@ -34,7 +34,7 @@ public class NodeInit implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Node node = nodeMapper.selectByAddress(address);
+        Node node = nodeMapper.selectByNameAndAddressAndDatacenter(nodeName,address,datacenter);
         if(node==null){
             Node newNode = new Node();
             //设置节点名

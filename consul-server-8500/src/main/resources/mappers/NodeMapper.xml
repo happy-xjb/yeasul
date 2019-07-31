@@ -104,4 +104,7 @@
     <select id="selectAll" resultMap="BaseResultMap">
       select * from node
     </select>
+    <select id="selectByNameAndAddressAndDatacenter" resultMap="BaseResultMap">
+      select * from node where `name` = #{name} and address = #{address} and datacenter = #{datacenter}
+    </select>
 </mapper>

@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="consul-server-8500" />
         <module name="consul-server-8501" />
+        <module name="consul-server-8502" />
         <module name="dept-consumer-80" />
         <module name="dept-provider-8001" />
         <module name="dept-provider-8002" />
@@ -17,6 +18,7 @@
     <bytecodeTargetLevel>
       <module name="consul-server-8500" target="1.8" />
       <module name="consul-server-8501" target="1.8" />
+      <module name="consul-server-8502" target="1.8" />
       <module name="dept-consumer-80" target="1.8" />
       <module name="dept-provider-8001" target="1.8" />
       <module name="dept-provider-8002" target="1.8" />
@@ -26,6 +28,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="consul-server-8500" options="-parameters" />
       <module name="consul-server-8501" options="-parameters" />
+      <module name="consul-server-8502" options="-parameters" />
       <module name="dept-consumer-80" options="-parameters" />
       <module name="dept-provider-8001" options="-parameters" />
       <module name="dept-provider-8002" options="-parameters" />

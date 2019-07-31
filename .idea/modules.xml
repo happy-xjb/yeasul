@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/consul-server-8500/consul-server-8500.iml" filepath="$PROJECT_DIR$/consul-server-8500/consul-server-8500.iml" />
       <module fileurl="file://$PROJECT_DIR$/consul-server-8501/consul-server-8501.iml" filepath="$PROJECT_DIR$/consul-server-8501/consul-server-8501.iml" />
+      <module fileurl="file://$PROJECT_DIR$/consul-server-8502/consul-server-8502.iml" filepath="$PROJECT_DIR$/consul-server-8502/consul-server-8502.iml" />
       <module fileurl="file://$PROJECT_DIR$/dept-consumer-80/dept-consumer-80.iml" filepath="$PROJECT_DIR$/dept-consumer-80/dept-consumer-80.iml" />
       <module fileurl="file://$PROJECT_DIR$/dept-provider-8001/dept-provider-8001.iml" filepath="$PROJECT_DIR$/dept-provider-8001/dept-provider-8001.iml" />
       <module fileurl="file://$PROJECT_DIR$/dept-provider-8002/dept-provider-8002.iml" filepath="$PROJECT_DIR$/dept-provider-8002/dept-provider-8002.iml" />
