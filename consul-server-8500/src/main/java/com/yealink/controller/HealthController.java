@@ -18,6 +18,7 @@ public class HealthController {
     @GetMapping("/service/{service}")
     public List<HealthService> getHealthServices(@PathVariable String service){
         List<HealthService> healthServices = healthService.getHealthServices(service);
+        System.out.println(healthServices);
         return healthServices;
     }
 }

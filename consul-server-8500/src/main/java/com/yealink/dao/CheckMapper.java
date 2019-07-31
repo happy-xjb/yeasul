@@ -27,8 +27,4 @@ public interface CheckMapper {
     int updateStatusToFailingByPrimaryKey(String checkId);
 
     int updateOutputByPrimaryKey(@Param("checkId") String checkId,@Param("output") String output);
-
-    List<Check> selectAllByNodeNameAndService(@Param("nodeName") String nodeName,@Param("service") String service);
-
-    List<Check> selectAllByNodeName(String nodeName);
 }

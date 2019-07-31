@@ -20,6 +20,4 @@ public interface ServiceInstanceMapper {
     List<ServiceInstance> selectAll();
 
     List<ServiceInstance> selectByServiceName(String serviceName);
-
-    List<ServiceInstance> selectByServiceIdList(List<String> list);
 }

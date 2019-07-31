@@ -2,10 +2,14 @@ package com.yealink;
 
 import com.yealink.config.Self;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Hello world!
@@ -17,6 +21,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:application.yml")
 public class Consul_Server_8500_APP
 {
+
     public static void main( String[] args )
     {
         SpringApplication.run(Consul_Server_8500_APP.class,args);

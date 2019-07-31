@@ -3,21 +3,21 @@ spring:
     name: dept-provider-8002
   cloud:
     consul:
-      host: 10.83.2.93
+      host: 127.0.0.1
       port: 8500
       discovery:
         service-name: dept-provider
-        ip-address: 10.83.2.93
+        ip-address: 127.0.0.1
         register-health-check: true
         health-check-path: /actuator/health
         health-check-interval: 5s
         health-check-timeout: 5s
         prefer-ip-address: true
-        tags: ["version=1.0","author=hmy"]
+        tags: {"version=1.0","author=xujianbo"}
 
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://62.234.44.124:3306/consul_schema
+    url: jdbc:mysql://62.234.44.124:3306/consul_db
     username: root
     password: 123456
   http:

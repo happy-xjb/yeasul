@@ -8,11 +8,10 @@
     <result column="url" jdbcType="VARCHAR" property="url" />
     <result column="interval" jdbcType="VARCHAR" property="interval" />
     <result column="timeout" jdbcType="VARCHAR" property="timeout" />
-    <result column="node" jdbcType="VARCHAR" property="node" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    check_id, kind, url, `interval`, timeout, node
+    check_id, kind, url, `interval`, timeout
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -29,11 +28,9 @@
   <insert id="insert" parameterType="com.yealink.entities.CheckInfo">
     <!--@mbg.generated-->
     insert into check_info (check_id, kind, url, 
-      `interval`, timeout, node
-      )
+      `interval`, timeout)
     values (#{checkId,jdbcType=VARCHAR}, #{kind,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, 
-      #{interval,jdbcType=VARCHAR}, #{timeout,jdbcType=VARCHAR}, #{node,jdbcType=VARCHAR}
-      )
+      #{interval,jdbcType=VARCHAR}, #{timeout,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yealink.entities.CheckInfo">
     <!--@mbg.generated-->
@@ -54,9 +51,6 @@
       <if test="timeout != null">
         timeout,
       </if>
-      <if test="node != null">
-        node,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="checkId != null">
@@ -73,9 +67,6 @@
       </if>
       <if test="timeout != null">
         #{timeout,jdbcType=VARCHAR},
-      </if>
-      <if test="node != null">
-        #{node,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -95,9 +86,6 @@
       <if test="timeout != null">
         timeout = #{timeout,jdbcType=VARCHAR},
       </if>
-      <if test="node != null">
-        node = #{node,jdbcType=VARCHAR},
-      </if>
     </set>
     where check_id = #{checkId,jdbcType=VARCHAR}
   </update>
@@ -107,11 +95,10 @@
     set kind = #{kind,jdbcType=VARCHAR},
       url = #{url,jdbcType=VARCHAR},
       `interval` = #{interval,jdbcType=VARCHAR},
-      timeout = #{timeout,jdbcType=VARCHAR},
-      node = #{node,jdbcType=VARCHAR}
+      timeout = #{timeout,jdbcType=VARCHAR}
     where check_id = #{checkId,jdbcType=VARCHAR}
   </update>
-    <select id="selectAllByNode" resultMap="BaseResultMap">
-      select * from check_info where node = #{node}
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from check_info
     </select>
 </mapper>

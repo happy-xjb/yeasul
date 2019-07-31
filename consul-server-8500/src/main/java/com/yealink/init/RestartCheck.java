@@ -32,7 +32,7 @@ public class RestartCheck implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<CheckInfo> checkInfoList = checkInfoMapper.selectAllByNode(nodeName);
+        List<CheckInfo> checkInfoList = checkInfoMapper.selectAll();
         for(CheckInfo checkInfo : checkInfoList){
             if(checkInfo.getKind().equals("http")){
                 checkUtil.startHttpCheck(checkInfo.getCheckId(),checkInfo.getUrl(),checkInfo.getInterval(),checkInfo.getTimeout());
@@ -42,3 +42,4 @@ public class RestartCheck implements ApplicationRunner {
         }
     }
 }
+

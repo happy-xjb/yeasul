@@ -1,13 +1,15 @@
 package com.yealink.service.impl;
 
 import com.ecwid.consul.v1.health.model.Check;
-import com.yealink.dao.*;
+import com.yealink.dao.CheckMapper;
+import com.yealink.dao.NodeMapper;
+import com.yealink.dao.ServiceInstanceMapper;
+import com.yealink.dao.ServiceTagMapper;
 import com.yealink.entities.Node;
 import com.yealink.entities.ServiceInstance;
 import com.yealink.service.HealthService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,9 +17,6 @@ import java.util.List;
 
 @Service
 public class HealthServiceImpl implements HealthService {
-    @Value("${consul.config.datacenter}")
-    String datacenter;
-
     @Autowired
     ServiceInstanceMapper serviceInstanceMapper;
     @Autowired
@@ -26,19 +25,11 @@ public class HealthServiceImpl implements HealthService {
     CheckMapper checkMapper;
     @Autowired
     ServiceTagMapper serviceTagMapper;
-    @Autowired
-    RegisterInfoMapper registerInfoMapper;
-    /**
-     * 返回当前数据中心所有的健康服务列表
-     * @param service
-     * @return
-     */
+
     @Override
     public List<com.ecwid.consul.v1.health.model.HealthService> getHealthServices(String service) {
         List<com.ecwid.consul.v1.health.model.HealthService> list = new ArrayList<>();
-        List<String> serviceIdListByDatacenterAndService = registerInfoMapper.selectServiceIdListByDatacenterAndService(datacenter, service);
-        List<ServiceInstance> serviceInstances = serviceInstanceMapper.selectByServiceIdList(serviceIdListByDatacenterAndService);
-//        List<ServiceInstance> serviceInstances = serviceInstanceMapper.selectByServiceName(service);
+        List<ServiceInstance> serviceInstances = serviceInstanceMapper.selectByServiceName(service);
         for(ServiceInstance serviceInstance: serviceInstances){
             //对于每个服务实例，都将生成对应的HealthService对象
             com.ecwid.consul.v1.health.model.HealthService healthService = new com.ecwid.consul.v1.health.model.HealthService();

@@ -4,7 +4,10 @@ import com.ecwid.consul.v1.agent.model.Check;
 import com.ecwid.consul.v1.agent.model.NewCheck;
 import com.ecwid.consul.v1.agent.model.NewService;
 import com.yealink.dao.*;
-import com.yealink.entities.*;
+import com.yealink.entities.CheckInfo;
+import com.yealink.entities.ServiceInstance;
+import com.yealink.entities.ServiceName;
+import com.yealink.entities.ServiceTag;
 import com.yealink.service.AgentService;
 import com.yealink.utils.CheckUtil;
 import com.yealink.utils.TimeUtil;
@@ -12,10 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,18 +25,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class AgentServiceImpl implements AgentService {
-    @Value("${consul.debug-config.bind-address}")
-    String nodeAddress;
-
-    @Value("${consul.config.datacenter}")
-    String datacenter;
-
-    @Value("${consul.config.node-name}")
-    String nodeName;
-
-    @Autowired
-    RegisterInfoMapper registerInfoMapper;
-
     @Autowired
     CheckMapper checkMapper;
 
@@ -62,21 +51,10 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public Map<String, com.ecwid.consul.v1.agent.model.Service> getAgentServices() {
-        Node node = nodeMapper.selectByAddress(nodeAddress);
-        List<String> serviceIdList = registerInfoMapper.selectServiceIdByDatacenter(node.getDatacenter());
-        Map<String, com.ecwid.consul.v1.agent.model.Service> map = new HashMap<>();
-//        List<ServiceInstance> serviceInstances = serviceInstanceMapper.selectAll();
-//        for(ServiceInstance serviceInstance : serviceInstances){
-//            com.ecwid.consul.v1.agent.model.Service service = new com.ecwid.consul.v1.agent.model.Service();
-//            service.setAddress(serviceInstance.getAddress());
-//            service.setId(serviceInstance.getServiceInstanceId());
-//            service.setPort(serviceInstance.getPort());
-//            service.setService(serviceInstance.getService());
-//            service.setTags(serviceTagMapper.selectByServiceId(serviceInstance.getServiceInstanceId()));
-//            map.put(serviceInstance.getServiceInstanceId(),service);
-//        }
-        for(String serviceId : serviceIdList){
-            ServiceInstance serviceInstance = serviceInstanceMapper.selectByPrimaryKey(serviceId);
+
+        Map<String, com.ecwid.consul.v1.agent.model.Service> map = new HashMap<String, com.ecwid.consul.v1.agent.model.Service>();
+        List<ServiceInstance> serviceInstances = serviceInstanceMapper.selectAll();
+        for(ServiceInstance serviceInstance : serviceInstances){
             com.ecwid.consul.v1.agent.model.Service service = new com.ecwid.consul.v1.agent.model.Service();
             service.setAddress(serviceInstance.getAddress());
             service.setId(serviceInstance.getServiceInstanceId());
@@ -117,15 +95,6 @@ public class AgentServiceImpl implements AgentService {
             serviceTag.setValue(tag);
             serviceTagMapper.insert(serviceTag);
         }
-
-        //将注册信息写入数据库
-        Node node = nodeMapper.selectByAddress(nodeAddress);
-        RegisterInfo registerInfo = new RegisterInfo();
-        registerInfo.setNodeId(node.getNodeId());
-        registerInfo.setServiceInstanceId(newService.getId());
-        registerInfo.setDatacenter(node.getDatacenter());
-        registerInfo.setService(newService.getName());
-        registerInfoMapper.insert(registerInfo);
         log.info("【服务注册成功】"+newService);
 
         //TODO 如果服务注册时有检查信息，开启一个线程检查此服务的健康状态
@@ -149,29 +118,10 @@ public class AgentServiceImpl implements AgentService {
         //TODO 删除对应的check
     }
 
-    /**
-     * 返回本数据中心注册的所有的服务的检查
-     * @return
-     */
     @Override
     public Map<String, Check> getAgentChecks() {
+        List<com.yealink.entities.Check> checks = checkMapper.selectAll();
         Map<String,Check> map = new HashMap<>();
-//        List<com.yealink.entities.Check> checks = checkMapper.selectAll();
-//        for(com.yealink.entities.Check check: checks){
-//            Check checkVO = new Check();
-//            BeanUtils.copyProperties(check,checkVO);
-//            checkVO.setServiceTags(serviceTagMapper.selectByServiceId(check.getServiceId()));
-//            map.put(check.getCheckId(),checkVO);
-//        }
-        List<String> serviceIdList = registerInfoMapper.selectServiceIdByDatacenter(datacenter);
-        List<com.yealink.entities.Check> checks = new ArrayList<>();
-        for(String serviceId : serviceIdList){
-            List<com.yealink.entities.Check> checkList = checkMapper.selectByServiceId(serviceId);
-            for(com.yealink.entities.Check check : checkList){
-                checks.add(check);
-            }
-        }
-
         for(com.yealink.entities.Check check: checks){
             Check checkVO = new Check();
             BeanUtils.copyProperties(check,checkVO);
@@ -183,7 +133,6 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public void agentCheckRegister(NewCheck newCheck) {
-        System.out.println("传入service层的newcheck"+newCheck);
         //TODO 将check信息插入数据库
         com.yealink.entities.Check check_db = new com.yealink.entities.Check();
         BeanUtils.copyProperties(newCheck,check_db);
@@ -225,10 +174,11 @@ public class AgentServiceImpl implements AgentService {
 
         //将checkInfo信息持久化入数据库，比如url，interval,timeout
         CheckInfo checkInfo = new CheckInfo();
-        checkInfo.setTimeout(newCheck.getTimeout()).setNode(nodeName).setInterval(newCheck.getInterval()).setCheckId(newCheck.getId());
+        checkInfo.setTimeout(newCheck.getTimeout()).setInterval(newCheck.getInterval()).setCheckId(newCheck.getId());
         if(newCheck.getHttp()!=null&&!newCheck.getHttp().equals(""))    checkInfo.setKind("http").setUrl(newCheck.getHttp());
         else if(newCheck.getTcp()!=null&&!newCheck.getTcp().equals("")) checkInfo.setKind("tcp").setUrl(newCheck.getTcp());
         checkInfoMapper.insertSelective(checkInfo);
+
     }
 
 

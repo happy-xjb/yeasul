@@ -11,11 +11,14 @@ import java.util.Map;
 public interface AgentService {
     Map<String, Service> getAgentServices();
 
+    @Transactional
     void agentServiceRegister(NewService newService);
 
+    @Transactional
     void agentServiceDeregister(String serviceId);
 
     Map<String, Check> getAgentChecks();
 
+    @Transactional
     void agentCheckRegister(NewCheck newCheck);
 }

@@ -69,7 +69,7 @@ public class CheckUtil {
 
         //Check信息持久化，持久化url，interval,timeout等等到数据库
         CheckInfo checkInfo = new CheckInfo();
-        checkInfo.setCheckId(check.getCheckId()).setInterval(newServiceCheck.getInterval()).setKind("http").setNode(nodeName).setTimeout(newServiceCheck.getTimeout()).setUrl(url);
+        checkInfo.setCheckId(check.getCheckId()).setInterval(newServiceCheck.getInterval()).setKind("http").setTimeout(newServiceCheck.getTimeout()).setUrl(url);
         //检查checkInfo是否已经存在
         if(checkInfoMapper.selectByPrimaryKey(checkInfo.getCheckId())==null)    checkInfoMapper.insertSelective(checkInfo);
         //检查check是否已经存在

@@ -17,5 +17,5 @@ public interface CheckInfoMapper {
 
     int updateByPrimaryKey(CheckInfo record);
 
-    List<CheckInfo> selectAllByNode(String node);
+    List<CheckInfo> selectAll();
 }

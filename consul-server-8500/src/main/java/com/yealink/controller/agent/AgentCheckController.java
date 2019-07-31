@@ -7,7 +7,6 @@ import com.yealink.service.AgentService;
 import com.yealink.utils.CheckUtil;
 import com.yealink.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 public class AgentCheckController extends AgentController {
-
     @Autowired
     AgentService agentService;
 

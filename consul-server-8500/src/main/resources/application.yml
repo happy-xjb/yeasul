@@ -4,7 +4,7 @@ spring:
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://62.234.44.124:3306/consul_schema
+    url: jdbc:mysql://62.234.44.124:3306/consul_db
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
   http:
@@ -16,8 +16,8 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
 consul:
+  config:
+    datacenter: CN_DC1
+    node-name: myNode1
   debug-config:
     bind-address: 10.83.2.93
-  config:
-    node-name: myNode1
-    datacenter: CN_DC1
