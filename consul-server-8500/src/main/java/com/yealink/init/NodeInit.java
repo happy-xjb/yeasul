@@ -19,7 +19,8 @@ public class NodeInit implements ApplicationRunner {
     private String nodeName;
     @Value("${consul.config.datacenter}")
     private String datacenter;
-
+    @Value("${server.port}")
+    private int port;
     @Value("${consul.debug-config.bind-address}")
     private String address;
 
@@ -40,6 +41,7 @@ public class NodeInit implements ApplicationRunner {
             else newNode.setDatacenter("dc1");
             newNode.setAddress(address);
             newNode.setNodeId(UUID.randomUUID().toString());
+            newNode.setPort(port);
             nodeMapper.insertSelective(newNode);
         }
 

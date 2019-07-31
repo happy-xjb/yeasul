@@ -7,10 +7,11 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="datacenter" jdbcType="VARCHAR" property="datacenter" />
+    <result column="port" jdbcType="INTEGER" property="port" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    node_id, `name`, address, datacenter
+    node_id, `name`, address, datacenter, port
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -27,9 +28,9 @@
   <insert id="insert" parameterType="com.yealink.entities.Node">
     <!--@mbg.generated-->
     insert into node (node_id, `name`, address, 
-      datacenter)
+      datacenter, port)
     values (#{nodeId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
-      #{datacenter,jdbcType=VARCHAR})
+      #{datacenter,jdbcType=VARCHAR}, #{port,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.yealink.entities.Node">
     <!--@mbg.generated-->
@@ -47,6 +48,9 @@
       <if test="datacenter != null">
         datacenter,
       </if>
+      <if test="port != null">
+        port,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="nodeId != null">
@@ -60,6 +64,9 @@
       </if>
       <if test="datacenter != null">
         #{datacenter,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null">
+        #{port,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -76,6 +83,9 @@
       <if test="datacenter != null">
         datacenter = #{datacenter,jdbcType=VARCHAR},
       </if>
+      <if test="port != null">
+        port = #{port,jdbcType=INTEGER},
+      </if>
     </set>
     where node_id = #{nodeId,jdbcType=VARCHAR}
   </update>
@@ -84,7 +94,8 @@
     update node
     set `name` = #{name,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR},
-      datacenter = #{datacenter,jdbcType=VARCHAR}
+      datacenter = #{datacenter,jdbcType=VARCHAR},
+      port = #{port,jdbcType=INTEGER}
     where node_id = #{nodeId,jdbcType=VARCHAR}
   </update>
     <select id="selectByAddress" resultMap="BaseResultMap">
