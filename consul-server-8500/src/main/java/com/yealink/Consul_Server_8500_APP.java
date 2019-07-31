@@ -21,7 +21,6 @@ import java.net.UnknownHostException;
 @PropertySource("classpath:application.yml")
 public class Consul_Server_8500_APP
 {
-
     public static void main( String[] args )
     {
         SpringApplication.run(Consul_Server_8500_APP.class,args);

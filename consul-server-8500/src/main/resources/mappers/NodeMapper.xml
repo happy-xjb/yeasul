@@ -101,4 +101,7 @@
     <select id="selectByAddress" resultMap="BaseResultMap">
       select * from node where address = #{address}
     </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+      select * from node
+    </select>
 </mapper>

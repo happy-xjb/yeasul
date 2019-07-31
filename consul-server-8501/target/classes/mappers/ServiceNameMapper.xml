@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yealink.dao.ServiceNameMapper">
+  <resultMap id="BaseResultMap" type="com.yealink.entities.ServiceName">
+    <!--@mbg.generated-->
+    <id column="service" jdbcType="VARCHAR" property="service" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!--@mbg.generated-->
+    delete from service_name
+    where service = #{service,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yealink.entities.ServiceName">
+    <!--@mbg.generated-->
+    insert into service_name (service)
+    values (#{service,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yealink.entities.ServiceName">
+    <!--@mbg.generated-->
+    insert into service_name
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="service != null">
+        service,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="service != null">
+        #{service,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectByService" resultType="com.yealink.entities.ServiceName">
+     select * from service_name where service = #{serviceName}
+  </select>
+  <select id="selectAll" resultType="java.lang.String">
+    select * from service_name
+  </select>
+</mapper>

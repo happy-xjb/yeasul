@@ -3,20 +3,23 @@ package com.yealink.service.impl;
 import com.ecwid.consul.v1.agent.model.Check;
 import com.ecwid.consul.v1.agent.model.NewCheck;
 import com.ecwid.consul.v1.agent.model.NewService;
+import com.google.gson.Gson;
+import com.yealink.config.Self;
 import com.yealink.dao.*;
-import com.yealink.entities.CheckInfo;
-import com.yealink.entities.ServiceInstance;
-import com.yealink.entities.ServiceName;
-import com.yealink.entities.ServiceTag;
+import com.yealink.entities.*;
 import com.yealink.service.AgentService;
 import com.yealink.utils.CheckUtil;
 import com.yealink.utils.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.protocol.HTTP;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class AgentServiceImpl implements AgentService {
+
+    @Autowired
+    Gson gson;
+
     @Autowired
     CheckMapper checkMapper;
 
@@ -48,6 +55,10 @@ public class AgentServiceImpl implements AgentService {
 
     @Autowired
     CheckInfoMapper checkInfoMapper;
+    @Autowired
+    Self self;
+    @Autowired
+
 
     @Override
     public Map<String, com.ecwid.consul.v1.agent.model.Service> getAgentServices() {
@@ -179,6 +190,81 @@ public class AgentServiceImpl implements AgentService {
         else if(newCheck.getTcp()!=null&&!newCheck.getTcp().equals("")) checkInfo.setKind("tcp").setUrl(newCheck.getTcp());
         checkInfoMapper.insertSelective(checkInfo);
 
+    }
+
+    @Override
+    public void agentJoin(String address, int port) {
+        Node node = nodeMapper.selectByPrimaryKey(self.getDebugConfig().getNodeId());
+        System.out.println("查询出Node为："+node);
+        //发送node信息
+        String url = "http://"+address+":"+port+"/v1/agent/acceptJoin";
+        String json = gson.toJson(node);
+        HttpPut httpPut = new HttpPut(url);
+        httpPut.addHeader(HTTP.CONTENT_TYPE, "application/json; charset=utf-8");
+        StringEntity stringEntity = new StringEntity(json,"UTF8");
+        httpPut.setEntity(stringEntity);
+        try {
+            httpClient.execute(httpPut);
+        } catch (IOException e) {
+            log.warn("[WARNING] Join "+address+":"+port+" failed.   Cause:Access refused");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void agentJoin(String address) {
+        agentJoin(address,8500);
+    }
+
+    @Override
+    public void sendAllNodesInClusterTo(Node node) {
+        List<Node> nodeList = nodeMapper.selectAll();
+        String json = gson.toJson(nodeList);
+        System.out.println("B端将nodeList转为json："+json);
+        String url = "http://"+node.getAddress()+":"+node.getPort()+"/v1/agent/clusterNodes";
+        HttpPut httpPut = new HttpPut(url);
+        httpPut.addHeader(HTTP.CONTENT_TYPE, "application/json; charset=utf-8");
+        StringEntity stringEntity = new StringEntity(json,"UTF8");
+        httpPut.setEntity(stringEntity);
+        try {
+            httpClient.execute(httpPut);
+        } catch (IOException e) {
+            log.warn("[WARNING] Join "+node.getAddress()+":"+node.getPort()+" failed.   Cause:Access refused");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void acceptNewNode(Node node) {
+        //集群的每个节点都发起一次PUT请求，/v1/agent/insertNode
+        List<Node> nodeList = nodeMapper.selectAll();
+        String json = gson.toJson(node);
+        for (Node node_db : nodeList){
+            String address = node_db.getAddress();
+            Integer port = node_db.getPort();
+            String url = "http://"+address+":"+port+"/v1/agent/insertNode";
+            HttpPut httpPut = new HttpPut(url);
+            httpPut.addHeader(HTTP.CONTENT_TYPE, "application/json; charset=utf-8");
+            StringEntity stringEntity = new StringEntity(json,"UTF8");
+            httpPut.setEntity(stringEntity);
+            try {
+                httpClient.execute(httpPut);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void copyNodeListToMyself(List<Node> nodeList) {
+        for(Node node : nodeList){
+            nodeMapper.insertSelective(node);
+        }
+    }
+
+    @Override
+    public void insertNewNode(Node node) {
+        nodeMapper.insertSelective(node);
     }
 
 
