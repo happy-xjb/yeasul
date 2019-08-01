@@ -40,38 +40,33 @@
                 <li role="presentation" th:each="service : ${services}" th:id="service_+${service}"><a th:href="'#'+${service}" th:attr="aria-controls=${service}" th:text="${service}" role="tab" data-toggle="tab"></a></li>
             </ul>
         </div>
-        <!--<div class="col-sm-offset-1 col-sm-6" style="float: left">-->
-            <!--<div class="tab-content">-->
-                <!--<div role="tabpanel" class="tab-pane fade in" th:each="service: ${serviceMap}" th:id="${service.getKey()}">-->
-                    <!--<h3 th:text="${service.getKey()}"></h3>-->
-                    <!--<hr>-->
-                    <!--<h4>TAGS</h4>-->
-                    <!--<span th:text="${service.getValue().getTags()}"></span>-->
-                    <!--<br/><br/>-->
-                    <!--<h4>NODES</h4>-->
-                    <!--&lt;!&ndash;<div class="panel panel-success" th:each="serviceAndCheckVO:${service.getValue().getServiceAndCheckVOList()}">&ndash;&gt;-->
-                    <!--&lt;!&ndash;<div class="panel-heading" th:text="${serviceAndCheckVO.getServiceInstance().getServiceInstanceId()}+'         '+${serviceAndCheckVO.getServiceInstance().getAddress()}+':'+${serviceAndCheckVO.getServiceInstance().getPort()}"></div>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<div class="panel-body">&ndash;&gt;-->
-                    <!--&lt;!&ndash;<p th:text="${serviceAndCheckVO.getTags()}"></p>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<p th:each="check : ${serviceAndCheckVO.getChecks()}">&ndash;&gt;-->
-                    <!--&lt;!&ndash;<span style="font-size: small" th:text="${check.getName()}+'     '"></span>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<span style="font-size: smaller" th:text="${check.getCheckId()}+'     '"></span>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<span style="font-size: smaller" th:text="${check.getStatus()}"></span>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</p>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                    <!--<div class="panel panel-success" th:each="nodeAndCheckVO :${service.getValue().getNodeAndCheckVOList()}">-->
-                        <!--<div class="panel-heading" th:text="${nodeAndCheckVO.getNode().getName()}+' '+' '+${nodeAndCheckVO.getNode().getAddress()}"></div>-->
-                        <!--<div class="panel-body">-->
-                            <!--<p th:each="check : ${nodeAndCheckVO.getCheckList()}">-->
-                                <!--<span style="font-weight: bold" th:text="${check.getName()}+' '"></span>-->
-                                <!--<span th:text="${check.getCheckId()}+' '+' '+${check.getStatus()}"></span>-->
-                            <!--</p>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
+        <div class="col-sm-offset-1 col-sm-6" style="float: left">
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in" th:each="service: ${serviceMap}" th:id="${service.getKey()}">
+                    <h3 th:text="${service.getKey()}"></h3>
+                    <hr>
+                    <h4>TAGS</h4>
+                    <span th:text="${service.getValue().getTags()}"></span>
+                    <br/><br/>
+                    <h4>NODES</h4>
+                    <div class="panel panel-info" th:each="nodeAndCheckVO :${service.getValue().getNodeAndCheckVOList()}">
+                        <div class="panel-heading" th:text="${nodeAndCheckVO.getNode().getName()}+' '+' '+${nodeAndCheckVO.getNode().getAddress()}+':'+${nodeAndCheckVO.getNode().getPort()}"></div>
+                        <div class="panel-body">
+                            <div th:each="check : ${nodeAndCheckVO.getCheckList()}">
+                                <div class="alert alert-success" th:if="${check.get('status') eq 'passing'}">
+                                    <span style="font-weight: bold" th:text="${check.get('name')}+' '"></span>
+                                    <span th:text="${check.get('checkId')}+' '+' '+${check.get('status')}"></span>
+                                </div>
+                                <div class="alert alert-warning" role="alert" th:if="${check.get('status') eq 'failing'}">
+                                    <span style="font-weight: bold" th:text="${check.get('name')}+' '"></span>
+                                    <span th:text="${check.get('checkId')}+' '+' '+${check.get('status')}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

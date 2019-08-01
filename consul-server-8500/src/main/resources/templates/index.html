@@ -49,13 +49,19 @@
                     <span th:text="${service.getValue().getTags()}"></span>
                     <br/><br/>
                     <h4>NODES</h4>
-                    <div class="panel panel-success" th:each="nodeAndCheckVO :${service.getValue().getNodeAndCheckVOList()}">
+                    <div class="panel panel-info" th:each="nodeAndCheckVO :${service.getValue().getNodeAndCheckVOList()}">
                         <div class="panel-heading" th:text="${nodeAndCheckVO.getNode().getName()}+' '+' '+${nodeAndCheckVO.getNode().getAddress()}+':'+${nodeAndCheckVO.getNode().getPort()}"></div>
                         <div class="panel-body">
-                            <p th:each="check : ${nodeAndCheckVO.getCheckList()}">
-                                <span style="font-weight: bold" th:text="${check.get('name')}+' '"></span>
-                                <span th:text="${check.get('checkId')}+' '+' '+${check.get('status')}"></span>
-                            </p>
+                            <div th:each="check : ${nodeAndCheckVO.getCheckList()}">
+                                <div class="alert alert-success" th:if="${check.get('status') eq 'passing'}">
+                                    <span style="font-weight: bold" th:text="${check.get('name')}+' '"></span>
+                                    <span th:text="${check.get('checkId')}+' '+' '+${check.get('status')}"></span>
+                                </div>
+                                <div class="alert alert-warning" role="alert" th:if="${check.get('status') eq 'failing'}">
+                                    <span style="font-weight: bold" th:text="${check.get('name')}+' '"></span>
+                                    <span th:text="${check.get('checkId')}+' '+' '+${check.get('status')}"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

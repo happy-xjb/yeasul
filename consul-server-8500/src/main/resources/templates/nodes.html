@@ -55,7 +55,8 @@
                     </div>
                     <br/><br/>
                     <h4>CHECKS</h4>
-                    <div class="panel panel-success" th:each="check:${node.getValue().getCheckList()}">
+                    <div  th:each="check:${node.getValue().getCheckList()}">
+                        <div class="panel panel-success" th:if="${check.get('status')} eq 'passing'">
                         <div class="panel-heading">
                             <span style="font-weight: bold" th:text="${check.get('name')}"></span>
                             <span th:text="' '+${check.get('checkId')}"></span>
@@ -68,7 +69,20 @@
                             <div class="alert alert-info" role="alert" th:text="${check.get('output')}"></div>
                         </div>
                     </div>
-
+                        <div class="panel panel-warning" th:if="${check.get('status')} eq 'failing'">
+                        <div class="panel-heading">
+                            <span style="font-weight: bold" th:text="${check.get('name')}"></span>
+                            <span th:text="' '+${check.get('checkId')}"></span>
+                            <span style="font-weight: bold" th:text="' '+${check.get('status')}"></span>
+                        </div>
+                        <div class="panel-body">
+                            <p style="font-weight: bold">NOTES</p>
+                            <p th:text="${check.get('notes')}"></p>
+                            <p style="font-weight: bold">OUTPUT</p>
+                            <div class="alert alert-info" role="alert" th:text="${check.get('output')}"></div>
+                        </div>
+                    </div>
+                    </div>
                 </div>
             </div>
         </div>
