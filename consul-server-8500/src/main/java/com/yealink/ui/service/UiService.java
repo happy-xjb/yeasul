@@ -1,7 +1,10 @@
 package com.yealink.ui.service;
 
 import com.yealink.entities.Check;
+import com.yealink.ui.vo.NodeVO;
+import com.yealink.ui.vo.ServiceAndCheckVO;
 import com.yealink.ui.vo.ServiceVO;
+import com.yealink.ui.vo.ServiceWithTagsVO;
 
 import java.util.List;
 import java.util.Map;
@@ -20,4 +23,10 @@ public interface UiService {
     List<String> getMyServiceTags(String service);
 
     List<List<Check>> getMyServiceChecks(String service);
+
+    Map<String, NodeVO> getAllNodeDetails();
+
+    List<Check> getMyChecks();
+
+    List<ServiceWithTagsVO> getMyServiceInstances();
 }

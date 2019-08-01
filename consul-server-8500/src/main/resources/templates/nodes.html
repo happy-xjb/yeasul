@@ -57,15 +57,15 @@
                     <h4>CHECKS</h4>
                     <div class="panel panel-success" th:each="check:${node.getValue().getCheckList()}">
                         <div class="panel-heading">
-                            <span style="font-weight: bold" th:text="${check.getName()}"></span>
-                            <span th:text="' '+${check.getCheckId()}"></span>
-                            <span style="font-weight: bold" th:text="' '+${check.getStatus()}"></span>
+                            <span style="font-weight: bold" th:text="${check.get('name')}"></span>
+                            <span th:text="' '+${check.get('checkId')}"></span>
+                            <span style="font-weight: bold" th:text="' '+${check.get('status')}"></span>
                         </div>
                         <div class="panel-body">
                             <p style="font-weight: bold">NOTES</p>
-                            <p th:text="${check.getNotes()}"></p>
+                            <p th:text="${check.get('notes')}"></p>
                             <p style="font-weight: bold">OUTPUT</p>
-                            <div class="alert alert-info" role="alert" th:text="${check.getOutput()}"></div>
+                            <div class="alert alert-info" role="alert" th:text="${check.get('output')}"></div>
                         </div>
                     </div>
 

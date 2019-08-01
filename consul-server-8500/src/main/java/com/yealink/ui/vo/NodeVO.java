@@ -6,6 +6,7 @@ import com.yealink.entities.Node;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -17,5 +18,5 @@ import java.util.List;
 public class NodeVO {
     Node node;
     List<ServiceWithTagsVO> serviceWithTagsVOList;
-    List<Check> checkList;
+    List<Map> checkList;
 }

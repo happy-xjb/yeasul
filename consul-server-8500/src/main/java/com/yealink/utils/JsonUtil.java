@@ -59,4 +59,13 @@ public class JsonUtil {
         }
         return null;
     }
+
+    public static List jacksonGetListFromJson(String json){
+        try {
+           return  objectMapper.readValue(json,List.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
