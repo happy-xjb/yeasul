@@ -148,5 +148,8 @@
   <update id="updateOutputByPrimaryKey">
     update `check` set `output` = #{output} where check_id = #{checkId}
   </update>
+    <select id="selectByServiceName" resultMap="BaseResultMap">
+      select * from `check` where service_name = #{serviceName}
+    </select>
 
 </mapper>

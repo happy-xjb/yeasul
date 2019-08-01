@@ -2,7 +2,9 @@ package com.yealink.ui.controller;
 
 import com.yealink.dao.ServiceNameMapper;
 import com.yealink.dao.ServiceTagMapper;
+import com.yealink.entities.Check;
 import com.yealink.ui.service.UiService;
+import com.yealink.ui.vo.ServiceVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -26,9 +29,9 @@ public class ServiceController{
     @RequestMapping("/ui/services")
     public String services(Model model){
         Set<String> services = uiService.getAllServices();
-//        Map<String, ServiceVO> serviceMap = uiService.getAllServiceDetails();
+        Map<String, ServiceVO> serviceMap = uiService.getAllServiceDetails();
         model.addAttribute("services",services);
-//        model.addAttribute("serviceMap",serviceMap);
+        model.addAttribute("serviceMap",serviceMap);
         return "index";
     }
 
@@ -44,7 +47,19 @@ public class ServiceController{
         return uiService.getMyServices();
     }
 
+    //返回本节点某个服务的所有tags
+    @RequestMapping("/ui/service/myTags/{service}")
+    @ResponseBody
+    public List<String> myTags(@PathVariable String service){
+        return uiService.getMyServiceTags(service);
+    }
 
+    //返回本节点某个服务的所有check,按服务ID分类
+    @RequestMapping("/ui/service/myChecks/{service}")
+    @ResponseBody
+    public List<List<Check>> myChecks(@PathVariable String service){
+        return uiService.getMyServiceChecks(service);
+    }
 
 
 }

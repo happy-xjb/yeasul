@@ -110,4 +110,7 @@
     <select id="selectByAddressAndPort" resultMap="BaseResultMap">
       select * from node where address = #{address} and port = #{port}
     </select>
+    <select id="selectAllNodeName" resultType="java.lang.String">
+      select name from node
+    </select>
 </mapper>
