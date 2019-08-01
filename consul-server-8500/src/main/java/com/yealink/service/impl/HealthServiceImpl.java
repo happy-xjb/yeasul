@@ -1,6 +1,8 @@
 package com.yealink.service.impl;
 
 import com.ecwid.consul.v1.health.model.Check;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.yealink.dao.CheckMapper;
 import com.yealink.dao.NodeMapper;
 import com.yealink.dao.ServiceInstanceMapper;
@@ -8,15 +10,36 @@ import com.yealink.dao.ServiceTagMapper;
 import com.yealink.entities.Node;
 import com.yealink.entities.ServiceInstance;
 import com.yealink.service.HealthService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class HealthServiceImpl implements HealthService {
+    @Value("${consul.debug-config.bind-address}")
+    String address;
+    @Value("${server.port}")
+    Integer port;
+
     @Autowired
     ServiceInstanceMapper serviceInstanceMapper;
     @Autowired
@@ -25,11 +48,35 @@ public class HealthServiceImpl implements HealthService {
     CheckMapper checkMapper;
     @Autowired
     ServiceTagMapper serviceTagMapper;
+    @Autowired
+    HttpClient httpClient;
+    @Autowired
+    Gson gson;
 
     @Override
     public List<com.ecwid.consul.v1.health.model.HealthService> getHealthServices(String service) {
         List<com.ecwid.consul.v1.health.model.HealthService> list = new ArrayList<>();
-        //调用集群中每一个
+        //GET请求调用集群中每一个节点/v1/health/service/my/{service}，返回节点的healthServiceList，加入到list中
+        List<Node> nodeList = nodeMapper.selectAll();
+        for(Node node : nodeList){
+            String url = "http://"+node.getAddress()+":"+node.getPort()+"/v1/health/service/my/"+service;
+
+            HttpGet httpGet = new HttpGet(url);
+            HttpResponse response = null;
+            try {
+                response = httpClient.execute(httpGet);
+                HttpEntity entity = response.getEntity();
+
+                if(entity!=null){
+                    String json = EntityUtils.toString(entity);
+                    List listFromJson = gson.fromJson(json, List.class);
+                    list.addAll(listFromJson);
+                }
+
+            } catch (IOException e) {
+                log.warn("[Health] Connect to "+url+" failed : Connection refused: connect");
+            }
+        }
 
 
         return list;
@@ -55,7 +102,8 @@ public class HealthServiceImpl implements HealthService {
             serviceVO.setTags(serviceTagMapper.selectByServiceId(serviceInstance.getServiceInstanceId()));
 
             //设置nodeVO
-            Node node = nodeMapper.selectByAddress(serviceInstance.getAddress());
+
+            Node node = nodeMapper.selectByAddressAndPort(address,port);
             if(node!=null) {
                 BeanUtils.copyProperties(node, nodeVO);
                 nodeVO.setId(node.getNodeId());

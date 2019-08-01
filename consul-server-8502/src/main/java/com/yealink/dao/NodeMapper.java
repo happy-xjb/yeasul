@@ -22,5 +22,7 @@ public interface NodeMapper {
 
     List<Node> selectAll();
 
+    Node selectByAddressAndPort(@Param("address") String address, @Param("port") Integer port);
+
     Node selectByNameAndAddressAndDatacenter(@Param("name") String name, @Param("address") String address, @Param("datacenter") String datacenter);
 }

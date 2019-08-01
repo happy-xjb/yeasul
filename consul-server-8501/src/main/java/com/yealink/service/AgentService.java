@@ -5,7 +5,6 @@ import com.ecwid.consul.v1.agent.model.NewCheck;
 import com.ecwid.consul.v1.agent.model.NewService;
 import com.ecwid.consul.v1.agent.model.Service;
 import com.yealink.entities.Node;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -36,4 +35,6 @@ public interface AgentService {
      * @param node
      */
     void insertNewNode(Node node);
+
+
 }

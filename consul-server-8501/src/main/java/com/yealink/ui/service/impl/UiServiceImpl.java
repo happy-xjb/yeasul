@@ -1,22 +1,26 @@
 package com.yealink.ui.service.impl;
 
-import com.yealink.dao.CheckMapper;
-import com.yealink.dao.ServiceInstanceMapper;
-import com.yealink.dao.ServiceNameMapper;
-import com.yealink.dao.ServiceTagMapper;
+import com.google.gson.Gson;
+import com.yealink.dao.*;
+import com.yealink.entities.Node;
 import com.yealink.entities.ServiceInstance;
 import com.yealink.ui.service.UiService;
 import com.yealink.ui.vo.ServiceAndCheckVO;
 import com.yealink.ui.vo.ServiceVO;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 @Service
+@Slf4j
 public class UiServiceImpl implements UiService {
     @Autowired
     ServiceNameMapper serviceNameMapper;
@@ -29,6 +33,14 @@ public class UiServiceImpl implements UiService {
 
     @Autowired
     CheckMapper checkMapper;
+
+    @Autowired
+    HttpClient httpClient;
+
+    @Autowired
+    NodeMapper nodeMapper;
+    @Autowired
+    Gson gson;
 
     @Override
     public Map<String, ServiceVO> getAllServiceDetails() {
@@ -50,5 +62,38 @@ public class UiServiceImpl implements UiService {
             map.put(serviceName,serviceVO);
         }
         return map;
+    }
+
+    @Override
+    public Set<String> getAllServices() {
+        Set<String> serviceSet = new HashSet<>();
+        //查询每个节点的service_name表，返回所有记录，并放入serviceSet中
+        List<Node> nodeList = nodeMapper.selectAll();
+        for(Node node : nodeList){
+            String url = "http://"+node.getAddress()+":"+node.getPort()+"/ui/myServices";
+            HttpGet httpGet = new HttpGet(url);
+            HttpResponse response = null;
+            try {
+                response = httpClient.execute(httpGet);
+                HttpEntity entity = response.getEntity();
+                String json = EntityUtils.toString(entity);
+                List<String> serviceList = gson.fromJson(json, List.class);
+                System.out.println(node.getPort()+" "+serviceList);
+                for(String serviceName : serviceList){
+                    serviceSet.add(serviceName);
+                }
+            } catch (IOException e) {
+                log.warn("[UI] GET "+url+" failed. Cause: Connection refused.");
+                e.printStackTrace();
+            }
+        }
+
+
+        return serviceSet;
+    }
+
+    @Override
+    public List<String> getMyServices() {
+        return serviceNameMapper.selectAll();
     }
 }

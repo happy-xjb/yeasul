@@ -30,34 +30,45 @@
         </div>
     </div>
     <div class="col-sm-offset-1 col-sm-10"><hr></div>
-    <!--服务列表-->
+    <!--节点列表-->
     <div>
         <div class="col-sm-3 col-sm-offset-1">
 
-            <!--<h2>Service</h2>-->
             <hr>
             <ul class="nav nav-pills nav-stacked nav-tabs" role="tablist">
-                <li role="presentation" th:each="service : ${services}" th:id="service_+${service}"><a th:href="'#'+${service}" th:attr="aria-controls=${service}" th:text="${service}" role="tab" data-toggle="tab"></a></li>
+                <li role="presentation" th:each="node : ${nodes}" th:id="node_+${node}"><a th:href="'#'+${node}" th:attr="aria-controls=${node}" th:text="${node}" role="tab" data-toggle="tab"></a></li>
             </ul>
         </div>
         <div class="col-sm-offset-1 col-sm-6" style="float: left">
             <div class="tab-content">
-                <div role="tabpanel" class="tab-pane fade in" th:each="service: ${serviceMap}" th:id="${service.getKey()}">
-                    <h3 th:text="${service.getKey()}"></h3>
+                <div role="tabpanel" class="tab-pane fade in" th:each="node: ${nodeMap}" th:id="${node.getKey()}">
+                    <h3 th:text="${node.getValue().getNode().getName()}+' '+${node.getValue().getNode().getAddress()}"></h3>
                     <hr>
-                    <h4>TAGS</h4>
-                    <span th:text="${service.getValue().getTags()}"></span>
-                    <br/><br/>
-                    <h4>NODES</h4>
-                    <div class="panel panel-success" th:each="nodeAndCheckVO :${service.getValue().getNodeAndCheckVOList()}">
-                        <div class="panel-heading" th:text="${nodeAndCheckVO.getNode().getName()}+' '+' '+${nodeAndCheckVO.getNode().getAddress()}+':'+${nodeAndCheckVO.getNode().getPort()}"></div>
+                    <h4>SERVICES</h4>
+                    <div class="panel panel-success" th:each="serviceWithTags:${node.getValue().getServiceWithTagsVOList()}">
                         <div class="panel-body">
-                            <p th:each="check : ${nodeAndCheckVO.getCheckList()}">
-                                <span style="font-weight: bold" th:text="${check.get('name')}+' '"></span>
-                                <span th:text="${check.get('checkId')}+' '+' '+${check.get('status')}"></span>
+                            <p><span style="font-weight: bold" th:text="${serviceWithTags.getServiceInstance().getService()}+' '"></span>
+                                <span th:text="${serviceWithTags.getServiceInstance().getAddress()}+':'+${serviceWithTags.getServiceInstance().getPort()}"></span>
                             </p>
+                            <p th:text="${serviceWithTags.getTags()}"></p>
                         </div>
                     </div>
+                    <br/><br/>
+                    <h4>CHECKS</h4>
+                    <div class="panel panel-success" th:each="check:${node.getValue().getCheckList()}">
+                        <div class="panel-heading">
+                            <span style="font-weight: bold" th:text="${check.getName()}"></span>
+                            <span th:text="' '+${check.getCheckId()}"></span>
+                            <span style="font-weight: bold" th:text="' '+${check.getStatus()}"></span>
+                        </div>
+                        <div class="panel-body">
+                            <p style="font-weight: bold">NOTES</p>
+                            <p th:text="${check.getNotes()}"></p>
+                            <p style="font-weight: bold">OUTPUT</p>
+                            <div class="alert alert-info" role="alert" th:text="${check.getOutput()}"></div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

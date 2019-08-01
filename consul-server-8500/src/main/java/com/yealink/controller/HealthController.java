@@ -25,7 +25,6 @@ public class HealthController {
     @GetMapping("/service/my/{service}")
     public List<HealthService> getMyHealthServices(@PathVariable String service){
         List<HealthService> healthServiceList = healthService.getMyHealthServices(service);
-        System.out.println();
         return healthServiceList;
     }
 }

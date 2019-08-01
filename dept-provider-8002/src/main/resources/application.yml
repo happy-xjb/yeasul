@@ -1,12 +1,12 @@
 spring:
   application:
-    name: dept-provider-8002
+    name: pay-provider-8002
   cloud:
     consul:
       host: 127.0.0.1
-      port: 8500
+      port: 8501
       discovery:
-        service-name: dept-provider
+        service-name: pay-provider
         ip-address: 127.0.0.1
         register-health-check: true
         health-check-path: /actuator/health

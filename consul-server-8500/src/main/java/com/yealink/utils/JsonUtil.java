@@ -2,6 +2,7 @@ package com.yealink.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.yealink.entities.Node;
 import org.springframework.beans.factory.annotation.Autowired;
 

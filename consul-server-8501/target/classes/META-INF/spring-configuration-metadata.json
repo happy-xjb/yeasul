@@ -20,6 +20,140 @@
   ],
   "properties": [
     {
+      "name": "consul.config.datacenter",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$Config"
+    },
+    {
+      "name": "consul.config.node-name",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$Config"
+    },
+    {
+      "name": "consul.config.revision",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$Config"
+    },
+    {
+      "name": "consul.config.server",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.yealink.config.Self$Config",
+      "defaultValue": false
+    },
+    {
+      "name": "consul.config.version",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$Config"
+    },
+    {
+      "name": "consul.debug-config.bind-address",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.bootstrap",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.yealink.config.Self$DebugConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "consul.debug-config.ca-file",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.cert-file",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.client-addresses",
+      "type": "java.lang.String[]",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.data-dir",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.dns-domain",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.dns-recursor",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.enable-debug",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.yealink.config.Self$DebugConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "consul.debug-config.enable-syslog",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.yealink.config.Self$DebugConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "consul.debug-config.key-file",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.leave-on-term",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.yealink.config.Self$DebugConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "consul.debug-config.log-level",
+      "type": "com.yealink.config.Self$LogLevel",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.node-id",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.pid-file",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.rejoin-after-leave",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.yealink.config.Self$DebugConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "consul.debug-config.skip-leave-on-int",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.yealink.config.Self$DebugConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "consul.debug-config.ui-dir",
+      "type": "java.lang.String",
+      "sourceType": "com.yealink.config.Self$DebugConfig"
+    },
+    {
+      "name": "consul.debug-config.verify-incoming",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.yealink.config.Self$DebugConfig",
+      "defaultValue": false
+    },
+    {
+      "name": "consul.debug-config.verify-outgoing",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.yealink.config.Self$DebugConfig",
+      "defaultValue": false
+    },
+    {
       "name": "consul.member",
       "type": "com.ecwid.consul.v1.agent.model.Member",
       "sourceType": "com.yealink.config.Self"

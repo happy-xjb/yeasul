@@ -126,7 +126,14 @@ public class AgentServiceImpl implements AgentService {
             serviceNameMapper.deleteByPrimaryKey(service);
         }
 
-        //TODO 删除对应的check
+        //删除对应的check和对应的checkInfo
+        List<com.yealink.entities.Check> checkList = checkMapper.selectByServiceId(serviceId);
+        for(com.yealink.entities.Check check : checkList){
+            String checkId = check.getCheckId();
+            checkInfoMapper.deleteByPrimaryKey(checkId);
+            checkMapper.deleteByPrimaryKey(checkId);
+        }
+
     }
 
     @Override
@@ -266,6 +273,8 @@ public class AgentServiceImpl implements AgentService {
     public void insertNewNode(Node node) {
         nodeMapper.insertSelective(node);
     }
+
+
 
 
 }
