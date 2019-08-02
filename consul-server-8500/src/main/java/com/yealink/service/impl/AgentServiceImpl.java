@@ -129,7 +129,9 @@ public class AgentServiceImpl implements AgentService {
         log.info("【服务注册成功】"+newService);
 
         //TODO 如果服务注册时有检查信息，开启一个线程检查此服务的健康状态
-        checkUtil.startHttpCheck(newService);
+        NewService.Check newServiceCheck = newService.getCheck();
+        if(newServiceCheck.getHttp()!=null&&!newServiceCheck.getHttp().equals(""))checkUtil.startHttpCheck(newService);
+        else if(newServiceCheck.getTcp()!=null&&!newServiceCheck.getTcp().equals(""))   checkUtil.startTcpCheck(newService);
     }
 
     @Override

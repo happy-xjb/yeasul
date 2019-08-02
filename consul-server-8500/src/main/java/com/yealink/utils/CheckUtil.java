@@ -208,4 +208,36 @@ public class CheckUtil {
         long timeout_ms = TimeUnit.MILLISECONDS.convert(timeout_num, timeout_unit);
         startHttpCheck(checkId,checkUrl,interval_num,timeout_ms,interval_unit);
     }
+
+    /**
+     * 为新注册的服务开启TCP检查
+     * @param newService    新注册的服务
+     */
+    public void startTcpCheck(NewService newService) {
+        NewService.Check newServiceCheck = newService.getCheck();
+        String url = newServiceCheck.getTcp();
+        log.info("[Check] Start TCP Check : "+url);
+        String interval = newServiceCheck.getInterval();    //循环时间
+        String timeout = newServiceCheck.getTimeout();  //超时时间
+        long interval_timeNum = TimeUtil.getTimeNum(interval);   //循环时间数字部分
+        TimeUnit interval_timeUnit = TimeUtil.getTimeUnit(interval);    //循环时间单位
+        long timeout_timeNum = TimeUtil.getTimeNum(timeout); //超时时间数字部分
+        TimeUnit timeout_timeUnit = TimeUtil.getTimeUnit(timeout);  //超时时间单位
+        Check check = new Check().setCheckId("service:"+newService.getId())
+                .setName("Service '"+newService.getName()+"' check")
+                .setServiceId(newService.getId())
+                .setServiceName(newService.getName())
+                .setNode(nodeName);
+
+        //Check信息持久化，持久化url，interval,timeout等等到数据库
+        CheckInfo checkInfo = new CheckInfo();
+        checkInfo.setCheckId(check.getCheckId()).setInterval(newServiceCheck.getInterval()).setKind("tcp").setNode(nodeName).setTimeout(newServiceCheck.getTimeout()).setUrl(url);
+        //检查checkInfo是否已经存在
+        if(checkInfoMapper.selectByPrimaryKey(checkInfo.getCheckId())==null)    checkInfoMapper.insertSelective(checkInfo);
+        //检查check是否已经存在
+        if(checkMapper.selectByPrimaryKey(check.getCheckId())==null)    checkMapper.insertSelective(check);
+        int oldValue = 1;    //设定check初始状态为1，代表passing
+        int newValue = 1;
+        startTcpCheck(check.getCheckId(),url,interval,timeout);
+    }
 }
