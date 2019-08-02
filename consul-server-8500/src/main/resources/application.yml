@@ -5,7 +5,7 @@ spring:
     username: root
     password: 123456
     url: jdbc:mysql://62.234.44.124:3306/consul_schema
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
   http:
     converters:
