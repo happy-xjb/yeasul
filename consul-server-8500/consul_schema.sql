@@ -11,7 +11,7 @@
  Target Server Version : 50644
  File Encoding         : 65001
 
- Date: 26/07/2019 14:49:50
+ Date: 02/08/2019 15:38:26
 */
 
 SET NAMES utf8mb4;
@@ -34,6 +34,32 @@ CREATE TABLE `check`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
+-- Table structure for check_info
+-- ----------------------------
+DROP TABLE IF EXISTS `check_info`;
+CREATE TABLE `check_info`  (
+  `check_id` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '检查ID，格式为service:服务实例ID',
+  `kind` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '检查方式，目前支持TCP和HTTP，有两种值http，tcp',
+  `url` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '检查的url',
+  `interval` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '循环检查时间',
+  `timeout` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '超时时间',
+  `node` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '检查的节点名称',
+  PRIMARY KEY (`check_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Table structure for key_value
+-- ----------------------------
+DROP TABLE IF EXISTS `key_value`;
+CREATE TABLE `key_value`  (
+  `node_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '节点唯一的UUID',
+  `node` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '节点名称',
+  `datacenter` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数据中心名称',
+  `key` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'key',
+  `value` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'value'
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+-- ----------------------------
 -- Table structure for node
 -- ----------------------------
 DROP TABLE IF EXISTS `node`;
@@ -41,8 +67,20 @@ CREATE TABLE `node`  (
   `node_id` varchar(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL COMMENT '唯一的UUID',
   `name` varchar(128) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL COMMENT '节点名称',
   `address` varchar(256) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL COMMENT '节点IP地址',
+  `datacenter` varchar(256) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL COMMENT '数据中心名称',
   PRIMARY KEY (`node_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Table structure for register_info
+-- ----------------------------
+DROP TABLE IF EXISTS `register_info`;
+CREATE TABLE `register_info`  (
+  `service_instance_id` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '服务实例ID',
+  `node_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '节点ID',
+  `datacenter` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数据中心名称',
+  `service` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '服务名称'
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Table structure for service_instance

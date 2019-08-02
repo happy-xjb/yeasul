@@ -22,4 +22,5 @@ public interface RegisterInfoMapper {
 
     List<String> selectAllServiceIdByNodeIdAndDatacenter(@Param("nodeId") String nodeId,@Param("datacenter") String datacenter);
 
+    String selectNodeIdByServiceId(String serviceId);
 }

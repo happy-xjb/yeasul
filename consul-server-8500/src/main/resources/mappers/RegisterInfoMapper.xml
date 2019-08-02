@@ -65,4 +65,7 @@
   <select id="selectAllServiceIdByNodeIdAndDatacenter" resultType="java.lang.String">
     select service_instance_id from register_info where node_id=#{nodeId} and datacenter=#{datacenter}
   </select>
+    <select id="selectNodeIdByServiceId" resultType="java.lang.String">
+      select node_id from register_info where service_instance_id = #{serviceId}
+    </select>
 </mapper>
