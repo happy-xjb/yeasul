@@ -9,7 +9,7 @@
 
 注册进Yeasul的所有信息将会被持久化进数据库，如下为数据库的模型图。
 
-![image][mysql_entity]
+![](https://gitee.com/happy-xjb/yeasul/raw/master/README_images/MYSQL_ENTITIES.bmp)
 
 ### check表
 
@@ -33,7 +33,25 @@ service:检查的服务的名称
 
 > 此表用于持久化检查的信息，用于在每次yeasul重启时，能够继续执行原有的检查
 
-check_id:
+check_id:检查的id，默认格式为service:服务实例ID
+
+kind:检查的方式，http,tcp
+
+url:检查的url，http的形式如http://127.0.0.1:8500/index，tcp的形式如127.0.0.1:8500
+
+interval:定义间隔多久执行一次检查，例如5s表示每隔5秒执行一次检查，支持的单位有ns,us,ms,s,m,h(纳秒，微妙，毫秒，秒，分，时)
+
+timeout:定义检查的超时时间，格式与interval相同。若超出超时时间没有得到正确的相应，则会将**check表**中的对应的check_id的记录的status置为failing。反之为passing。
+
+node:负责执行此检查的节点名称
+
+### service_name表
+
+> 此表用于记录注册在数据库中所有的服务名称
+
+service:服务名称
+
+### key
 
 # 上手指南
 
