@@ -202,6 +202,7 @@ public class AgentServiceImpl implements AgentService {
         com.yealink.entities.Check check_db = new com.yealink.entities.Check();
         BeanUtils.copyProperties(newCheck,check_db);
         check_db.setCheckId(newCheck.getId());
+        check_db.setNode(nodeName);
 //        check_db.setServiceName("需要得到服务名");
         ServiceInstance serviceInstance = serviceInstanceMapper.selectByPrimaryKey(newCheck.getServiceId());
         if(serviceInstance!=null){
