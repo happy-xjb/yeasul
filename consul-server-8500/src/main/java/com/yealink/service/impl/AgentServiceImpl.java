@@ -106,6 +106,14 @@ public class AgentServiceImpl implements AgentService {
             serviceTagMapper.deleteAllByServiceId(newService.getId());
         }else{
             serviceInstanceMapper.insert(serviceInstance);
+            //将注册信息写入数据库
+            Node node = nodeMapper.selectByAddress(nodeAddress);
+            RegisterInfo registerInfo = new RegisterInfo();
+            registerInfo.setNodeId(node.getNodeId());
+            registerInfo.setServiceInstanceId(newService.getId());
+            registerInfo.setDatacenter(node.getDatacenter());
+            registerInfo.setService(newService.getName());
+            registerInfoMapper.insert(registerInfo);
         }
 
         //将标签写入数据库
@@ -118,14 +126,7 @@ public class AgentServiceImpl implements AgentService {
             serviceTagMapper.insert(serviceTag);
         }
 
-        //将注册信息写入数据库
-        Node node = nodeMapper.selectByAddress(nodeAddress);
-        RegisterInfo registerInfo = new RegisterInfo();
-        registerInfo.setNodeId(node.getNodeId());
-        registerInfo.setServiceInstanceId(newService.getId());
-        registerInfo.setDatacenter(node.getDatacenter());
-        registerInfo.setService(newService.getName());
-        registerInfoMapper.insert(registerInfo);
+
         log.info("【服务注册成功】"+newService);
 
         //TODO 如果服务注册时有检查信息，开启一个线程检查此服务的健康状态
