@@ -3,15 +3,15 @@
 
  Source Server         : 62.234.44.124-腾讯云
  Source Server Type    : MySQL
- Source Server Version : 50644
+ Source Server Version : 80017
  Source Host           : 62.234.44.124:3306
  Source Schema         : consul_schema
 
  Target Server Type    : MySQL
- Target Server Version : 50644
+ Target Server Version : 80017
  File Encoding         : 65001
 
- Date: 02/08/2019 15:38:26
+ Date: 05/08/2019 17:07:11
 */
 
 SET NAMES utf8mb4;
@@ -52,8 +52,6 @@ CREATE TABLE `check_info`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `key_value`;
 CREATE TABLE `key_value`  (
-  `node_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '节点唯一的UUID',
-  `node` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '节点名称',
   `datacenter` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数据中心名称',
   `key` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'key',
   `value` varchar(512) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'value'
