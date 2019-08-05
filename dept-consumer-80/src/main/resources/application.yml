@@ -2,7 +2,7 @@ server:
   port: 80
 spring:
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://62.234.44.124:3306/consul_schema
     username: root
     password: 123456

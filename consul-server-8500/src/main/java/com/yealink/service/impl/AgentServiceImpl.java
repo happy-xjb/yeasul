@@ -150,7 +150,16 @@ public class AgentServiceImpl implements AgentService {
             serviceNameMapper.deleteByPrimaryKey(service);
         }
 
-        //TODO 删除对应的check
+        //删除对应的check
+        List<com.yealink.entities.Check> checkList = checkMapper.selectByServiceId(serviceId);
+        for(com.yealink.entities.Check check :checkList){
+            checkMapper.deleteByPrimaryKey(check.getCheckId());
+            checkInfoMapper.deleteByPrimaryKey(check.getCheckId());
+            log.info("[SUCCESS] delete the check with check id : "+check.getCheckId());
+        }
+        //删除对应的register_info
+        registerInfoMapper.deleteByServiceId(serviceId);
+        log.info("[Deregister Service] deregister service "+serviceId+" successfully");
     }
 
     /**
@@ -233,6 +242,13 @@ public class AgentServiceImpl implements AgentService {
         if(newCheck.getHttp()!=null&&!newCheck.getHttp().equals(""))    checkInfo.setKind("http").setUrl(newCheck.getHttp());
         else if(newCheck.getTcp()!=null&&!newCheck.getTcp().equals("")) checkInfo.setKind("tcp").setUrl(newCheck.getTcp());
         checkInfoMapper.insertSelective(checkInfo);
+    }
+
+    @Override
+    public void agentCheckDeregister(String checkId) {
+        checkMapper.deleteByPrimaryKey(checkId);
+        checkInfoMapper.deleteByPrimaryKey(checkId);
+        log.info("[SUCCESS] delete the check with check id : "+checkId);
     }
 
 

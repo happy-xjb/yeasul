@@ -33,6 +33,7 @@ public class AgentServiceController extends AgentController {
 
     @PutMapping("/service/deregister/{serviceId}")
     public void agentServiceDeregister(@PathVariable String serviceId){
+//        System.out.println("进入了方法");
         agentService.agentServiceDeregister(serviceId);
     }
 }

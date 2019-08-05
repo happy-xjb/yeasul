@@ -68,4 +68,7 @@
     <select id="selectNodeIdByServiceId" resultType="java.lang.String">
       select node_id from register_info where service_instance_id = #{serviceId}
     </select>
+    <delete id="deleteByServiceId">
+      delete from register_info where service_instance_id = #{serviceId}
+    </delete>
 </mapper>

@@ -49,17 +49,6 @@
                     <span th:text="${service.getValue().getTags()}"></span>
                     <br/><br/>
                     <h4>NODES</h4>
-                    <!--<div class="panel panel-success" th:each="serviceAndCheckVO:${service.getValue().getServiceAndCheckVOList()}">-->
-                    <!--<div class="panel-heading" th:text="${serviceAndCheckVO.getServiceInstance().getServiceInstanceId()}+'         '+${serviceAndCheckVO.getServiceInstance().getAddress()}+':'+${serviceAndCheckVO.getServiceInstance().getPort()}"></div>-->
-                    <!--<div class="panel-body">-->
-                    <!--<p th:text="${serviceAndCheckVO.getTags()}"></p>-->
-                    <!--<p th:each="check : ${serviceAndCheckVO.getChecks()}">-->
-                    <!--<span style="font-size: small" th:text="${check.getName()}+'     '"></span>-->
-                    <!--<span style="font-size: smaller" th:text="${check.getCheckId()}+'     '"></span>-->
-                    <!--<span style="font-size: smaller" th:text="${check.getStatus()}"></span>-->
-                    <!--</p>-->
-                    <!--</div>-->
-                    <!--</div>-->
                     <div class="panel panel-info" th:each="nodeAndCheckVO :${service.getValue().getNodeAndCheckVOList()}">
                         <div class="panel-heading" th:text="${nodeAndCheckVO.getNode().getName()}+' '+' '+${nodeAndCheckVO.getNode().getAddress()}"></div>
                         <div class="panel-body">

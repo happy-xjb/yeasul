@@ -6,7 +6,6 @@ spring:
     password: 123456
     url: jdbc:mysql://62.234.44.124:3306/consul_schema
     driver-class-name: com.mysql.cj.jdbc.Driver
-    type: com.alibaba.druid.pool.DruidDataSource
   http:
     converters:
       preferred-json-mapper: gson #必须使用gson，否则健康检查会出错

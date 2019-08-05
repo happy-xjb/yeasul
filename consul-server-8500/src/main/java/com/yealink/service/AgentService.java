@@ -18,4 +18,6 @@ public interface AgentService {
     Map<String, Check> getAgentChecks();
 
     void agentCheckRegister(NewCheck newCheck);
+
+    void agentCheckDeregister(String checkId);
 }
