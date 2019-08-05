@@ -96,25 +96,6 @@
     <orderEntry type="library" name="Maven: org.mybatis.spring.boot:mybatis-spring-boot-autoconfigure:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis:mybatis:3.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis:mybatis-spring:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.alibaba:druid:1.0.31" level="project" />
-    <orderEntry type="module-library">
-      <library name="Maven: com.alibaba:jconsole:1.8.0">
-        <CLASSES>
-          <root url="jar://C:/Program Files/Java/jdk1.8.0_144/lib/jconsole.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: com.alibaba:tools:1.8.0">
-        <CLASSES>
-          <root url="jar://C:/Program Files/Java/jdk1.8.0_144/lib/tools.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" name="Maven: org.jodd:jodd-json:5.0.13" level="project" />
     <orderEntry type="library" name="Maven: org.jodd:jodd-bean:5.0.13" level="project" />
