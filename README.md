@@ -9,7 +9,7 @@
 
 注册进Yeasul的所有信息将会被持久化进数据库，如下为数据库的模型图。
 
-![](https://gitee.com/happy-xjb/yeasul/raw/master/README_images/MYSQL_ENTITIES.bmp)
+![](./README_images/MYSQL_ENTITIES.bmp)
 
 ### check表
 
