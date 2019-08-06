@@ -13,6 +13,12 @@ public class JsonUtil {
     }
 
     public static<T> T getObjectFromJson(HttpServletRequest request,Class<T> T){
+        try {
+            String s = request.getReader().readLine();
+            System.out.println("reader里面数据："+s);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Object o = null;
         try {
             o = gson.fromJson(request.getReader(),T);

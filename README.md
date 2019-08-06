@@ -263,3 +263,75 @@ Self接口
 }
 ```
 
+## 查看所有服务的检查
+
+可以在页面中查看，也可以通过GET请求访问/v1/agent/checks
+
+## 查看集群中某个服务的健康状态
+
+可以在页面中查看，可以通过GET请求访问/v1/health/service/{service}
+
+service:指服务的名称
+
+# 集群配置
+
+下面演示如何搭建两台服务器的集群。
+
+假设有两台服务器A和B，如果要启动两台服务器的集群，请在A和B的application.yml严格按照如下要求配置。
+
+**A的application.yml**
+
+```yml
+server:
+  port: 8500
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://62.234.44.124:3306/consul_schema	#将A和B连接至相同数据库
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  http:
+    converters:
+      preferred-json-mapper: gson 
+mybatis:
+  mapper-locations: classpath:/mappers/*.xml
+  type-aliases-package: com.yealink.entities
+  configuration:
+    map-underscore-to-camel-case: true
+consul:
+  debug-config:
+    bind-address: 10.83.2.93	#配置好A的IP地址
+  config:
+    node-name: myNode1	#A的节点名，保持节点名在数据库中唯一！
+    datacenter: CN_DC1	#A要加入的集群，配置和B一致
+
+```
+
+**B的application.yml**
+
+```yaml
+server:
+  port: 8500
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://62.234.44.124:3306/consul_schema	#和A连接至相同数据库
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  http:
+    converters:
+      preferred-json-mapper: gson 
+mybatis:
+  mapper-locations: classpath:/mappers/*.xml
+  type-aliases-package: com.yealink.entities
+  configuration:
+    map-underscore-to-camel-case: true
+consul:
+  debug-config:
+    bind-address: 192.168.160.128 #配置好B的IP地址
+  config:
+    node-name: myNode2	#B的节点名，保持节点名在数据库中唯一！
+    datacenter: CN_DC1	#B要加入的集群，配置和B一致
+
+```
+
