@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class IndexController {
-    @RequestMapping({"/","/index"})
+    @RequestMapping({"/","/index","/ui"})
     public String index(Model model){
         return "redirect:/ui/services";
     }
