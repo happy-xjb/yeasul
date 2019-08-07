@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yealink.dao.KeyValueMapper">
+  <resultMap id="BaseResultMap" type="com.yealink.entities.KeyValue">
+    <!--@mbg.generated-->
+    <result column="datacenter" jdbcType="VARCHAR" property="datacenter" />
+    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+  </resultMap>
+  <insert id="insert" parameterType="com.yealink.entities.KeyValue">
+    <!--@mbg.generated-->
+    insert into key_value (datacenter, `key`, `value`
+      )
+    values (#{datacenter,jdbcType=VARCHAR}, #{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yealink.entities.KeyValue">
+    <!--@mbg.generated-->
+    insert into key_value
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="datacenter != null">
+        datacenter,
+      </if>
+      <if test="key != null">
+        `key`,
+      </if>
+      <if test="value != null">
+        `value`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="datacenter != null">
+        #{datacenter,jdbcType=VARCHAR},
+      </if>
+      <if test="key != null">
+        #{key,jdbcType=VARCHAR},
+      </if>
+      <if test="value != null">
+        #{value,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectByKeyAndDatacenter" resultMap="BaseResultMap">
+    select * from key_value where `key` = #{key} and datacenter = #{datacenter}
+  </select>
+  <update id="update">
+    update key_value set `value` =#{value} where `key` =#{key} and `datacenter` = #{datacenter}
+  </update>
+  <delete id="delectByKeyAndDataceneter">
+    delete from  key_value where `key` =#{key} and datacenter = #{datacenter}
+  </delete>
+</mapper>

@@ -35,6 +35,16 @@
                 </TableGenerateConfig>
               </value>
             </entry>
+            <entry key="consul_schema:key_value">
+              <value>
+                <TableGenerateConfig>
+                  <option name="generatedKey" value="" />
+                  <option name="javaModelName" value="KeyValue" />
+                  <option name="moduleName" value="consul-server-8500" />
+                  <option name="useActualColumnName" value="false" />
+                </TableGenerateConfig>
+              </value>
+            </entry>
             <entry key="consul_schema:node">
               <value>
                 <TableGenerateConfig>
