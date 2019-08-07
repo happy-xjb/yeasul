@@ -75,7 +75,7 @@ public class CheckUtil {
 
         //Check信息持久化，持久化url，interval,timeout等等到数据库
         CheckInfo checkInfo = new CheckInfo();
-        checkInfo.setCheckId(check.getCheckId()).setInterval(newServiceCheck.getInterval()).setKind("http").setNode(nodeName).setTimeout(newServiceCheck.getTimeout()).setUrl(url);
+        checkInfo.setCheckId(check.getCheckId()).setInterval(interval).setKind("http").setNode(nodeName).setTimeout(timeout).setUrl(url);
         //检查checkInfo是否已经存在
         if(checkInfoMapper.selectByPrimaryKey(checkInfo.getCheckId())==null)    checkInfoMapper.insertSelective(checkInfo);
         //检查check是否已经存在
@@ -224,7 +224,13 @@ public class CheckUtil {
         String url = newServiceCheck.getTcp();
         log.info("[Check] Start TCP Check : "+url);
         String interval = newServiceCheck.getInterval();    //循环时间
-        String timeout = newServiceCheck.getTimeout();  //超时时间
+        StringBuffer timeoutSb = null;
+        //如果timeout没有设置，那就让timeout和interval相等
+        if(newServiceCheck.getTimeout()==null||newServiceCheck.getTimeout().equals("")) timeoutSb = new StringBuffer(interval);
+        else timeoutSb = new StringBuffer(newServiceCheck.getTimeout());
+
+
+        String timeout = timeoutSb.toString();  //超时时间
         long interval_timeNum = TimeUtil.getTimeNum(interval);   //循环时间数字部分
         TimeUnit interval_timeUnit = TimeUtil.getTimeUnit(interval);    //循环时间单位
         long timeout_timeNum = TimeUtil.getTimeNum(timeout); //超时时间数字部分
@@ -237,7 +243,7 @@ public class CheckUtil {
 
         //Check信息持久化，持久化url，interval,timeout等等到数据库
         CheckInfo checkInfo = new CheckInfo();
-        checkInfo.setCheckId(check.getCheckId()).setInterval(newServiceCheck.getInterval()).setKind("tcp").setNode(nodeName).setTimeout(newServiceCheck.getTimeout()).setUrl(url);
+        checkInfo.setCheckId(check.getCheckId()).setInterval(interval).setKind("tcp").setNode(nodeName).setTimeout(timeout).setUrl(url);
         //检查checkInfo是否已经存在
         if(checkInfoMapper.selectByPrimaryKey(checkInfo.getCheckId())==null)    checkInfoMapper.insertSelective(checkInfo);
         //检查check是否已经存在
