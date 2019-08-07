@@ -142,7 +142,7 @@
     <update id="updateStatusToPassingByPrimaryKey">
       update `check` set status = 'passing' where check_id = #{checkId}
     </update>
-  <update id="updateStatusToFailingByPrimaryKey">
+  <update id="updateStatusToCriticalByPrimaryKey">
       update `check` set status = 'critical' where check_id = #{checkId}
   </update>
   <update id="updateOutputByPrimaryKey">

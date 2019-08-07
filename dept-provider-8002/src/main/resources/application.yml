@@ -14,6 +14,7 @@ spring:
         health-check-timeout: 5s
         prefer-ip-address: true
         tags: ["version=1.0","author=hmy"]
+        health-check-critical-timeout: 2m
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

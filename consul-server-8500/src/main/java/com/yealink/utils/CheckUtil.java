@@ -6,6 +6,7 @@ import com.yealink.dao.CheckInfoMapper;
 import com.yealink.dao.CheckMapper;
 import com.yealink.entities.Check;
 import com.yealink.entities.CheckInfo;
+import com.yealink.service.AgentService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +33,8 @@ import java.util.concurrent.TimeUnit;
 public class CheckUtil {
     @Value("${consul.config.node-name}")
     String nodeName;
+    @Autowired
+    AgentService agentService;
 
     @Autowired
     private Gson gson;
@@ -52,6 +56,7 @@ public class CheckUtil {
      * @param newService    新注册的服务
      */
     public void startHttpCheck(NewService newService){
+        System.out.println("进入了HTTPCHECK");
         NewService.Check newServiceCheck = newService.getCheck();
         String url = newServiceCheck.getHttp();
         log.info("[Check] Start HTTP Check : "+url);
@@ -82,6 +87,9 @@ public class CheckUtil {
         //检查check是否已经存在
         if(checkMapper.selectByPrimaryKey(check.getCheckId())==null)    checkMapper.insertSelective(check);
 
+        //TODO 开启检查critical,如果在deregisterCriticalServiceAfter时间后仍为critical，则注销服务（30s检查一次）
+        String deregisterCriticalServiceAfter = newServiceCheck.getDeregisterCriticalServiceAfter();
+        checkCritical(deregisterCriticalServiceAfter,check.getCheckId(),newService.getId());
 
         //开启定时任务
         ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(() -> {
@@ -256,4 +264,52 @@ public class CheckUtil {
         int newValue = 1;
         startTcpCheck(check.getCheckId(),url,interval,timeout);
     }
+
+    /**
+     * 注册服务时，检查初始化为critical，如果在此时间内一直为critical，则注销服务
+     * @param deregisterCriticalServiceAfter 注销时间，如果在此时间内仍为critical，则注销服务
+     */
+    public  void checkCritical(String deregisterCriticalServiceAfter,String checkId,String serviceId){
+        if(deregisterCriticalServiceAfter!=null&&!deregisterCriticalServiceAfter.equals("")){
+            System.out.println("进入了checkCritical方法");
+            TimeUnit timeUnit = TimeUtil.getTimeUnit(deregisterCriticalServiceAfter);
+            long timeNum = TimeUtil.getTimeNum(deregisterCriticalServiceAfter);
+            long ms = TimeUnit.MILLISECONDS.convert(timeNum, timeUnit);
+            new CheckCriticalThread(ms,checkId,serviceId).start();
+        }
+    }
+
+    class CheckCriticalThread extends Thread{
+        long ms;
+        String checkId;
+        String serviceId;
+        public CheckCriticalThread(long ms,String checkId,String serviceId){
+            this.ms=ms;
+            this.checkId=checkId;
+            this.serviceId=serviceId;
+        }
+
+        public void run(){
+            System.out.println("进入了线程");
+            while(ms>0){
+                Check check = checkMapper.selectByPrimaryKey(checkId);
+                String status = check.getStatus();
+                if(status.equals("passing")){
+                    System.out.println("critical检查为passing");
+                    break;
+                }else{
+                    System.out.println("critical检查为critical,剩余时间"+ms);
+                    try {
+                        Thread.sleep(30000);
+                        ms-=30000;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if(ms<=0)   agentService.agentServiceDeregister(serviceId);
+        }
+    }
 }
+
+
