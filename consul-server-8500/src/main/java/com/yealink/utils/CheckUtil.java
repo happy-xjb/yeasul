@@ -60,8 +60,6 @@ public class CheckUtil {
         //如果timeout没有设置，那就让timeout和interval相等
         if(newServiceCheck.getTimeout()==null||newServiceCheck.getTimeout().equals("")) timeoutSb = new StringBuffer(interval);
         else timeoutSb = new StringBuffer(newServiceCheck.getTimeout());
-
-
         String timeout = timeoutSb.toString();  //超时时间
         long interval_timeNum = TimeUtil.getTimeNum(interval);   //循环时间数字部分
         TimeUnit interval_timeUnit = TimeUtil.getTimeUnit(interval);    //循环时间单位
@@ -126,14 +124,14 @@ public class CheckUtil {
             try {
                 socket.connect(new InetSocketAddress(host,port), (int) timeout);
                 log.info("agent: socket connection success '"+host+":"+port);
-                //TODO  将check状态变成passing,更新output
+                //  将check状态变成passing,更新output
                 checkMapper.updateStatusToPassingByPrimaryKey(checkId);
-                checkMapper.updateOutputByPrimaryKey(checkId,"socket connection success '"+host+":"+port);
+                checkMapper.updateOutputByPrimaryKey(checkId,"socket connection success "+host+":"+port);
             } catch (IOException e) {
                 log.warn("agent: socket connection failed '"+host+":"+port);
-                //TODO 将check状态变成failing，更新output
+                // 将check状态变成failing，更新output
                 checkMapper.updateStatusToFailingByPrimaryKey(checkId);
-                checkMapper.updateOutputByPrimaryKey(checkId,"socket connection failed '"+host+":"+port);
+                checkMapper.updateOutputByPrimaryKey(checkId,"socket connection failed "+host+":"+port);
             }
             //关闭socket
             if(!socket.isClosed()) {
