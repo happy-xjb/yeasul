@@ -24,7 +24,7 @@ public interface CheckMapper {
 
     int updateStatusToPassingByPrimaryKey(String checkId);
 
-    int updateStatusToFailingByPrimaryKey(String checkId);
+    int updateStatusToCriticalByPrimaryKey(String checkId);
 
     int updateOutputByPrimaryKey(@Param("checkId") String checkId,@Param("output") String output);
 

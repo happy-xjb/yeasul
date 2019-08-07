@@ -71,6 +71,9 @@ public class CheckUtil {
                 .setServiceName(newService.getName())
                 .setNode(nodeName);
 
+        if(newServiceCheck.getStatus()!=null&&!newServiceCheck.getStatus().equals(""))    check.setStatus(newServiceCheck.getStatus());
+        else check.setStatus("critical");
+
         //Check信息持久化，持久化url，interval,timeout等等到数据库
         CheckInfo checkInfo = new CheckInfo();
         checkInfo.setCheckId(check.getCheckId()).setInterval(interval).setKind("http").setNode(nodeName).setTimeout(timeout).setUrl(url);
@@ -78,8 +81,8 @@ public class CheckUtil {
         if(checkInfoMapper.selectByPrimaryKey(checkInfo.getCheckId())==null)    checkInfoMapper.insertSelective(checkInfo);
         //检查check是否已经存在
         if(checkMapper.selectByPrimaryKey(check.getCheckId())==null)    checkMapper.insertSelective(check);
-        int oldValue = 1;    //设定check初始状态为1，代表passing
-        int newValue = 1;
+
+
         //开启定时任务
         ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(() -> {
             RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout((int) TimeUnit.MILLISECONDS.convert(timeout_timeNum, timeout_timeUnit))
@@ -101,7 +104,7 @@ public class CheckUtil {
                 }
                 log.info("[Service] check pass "+check);
             } catch (Exception e) {
-                check.setStatus("failing").setOutput("HTTP GET " + url + " "+ "refused");
+                check.setStatus("critical").setOutput("HTTP GET " + url + " "+ "refused");
                 checkMapper.updateByPrimaryKey(check);
                 log.warn("【服务异常】" + check);
             }
@@ -130,7 +133,7 @@ public class CheckUtil {
             } catch (IOException e) {
                 log.warn("agent: socket connection failed '"+host+":"+port);
                 // 将check状态变成failing，更新output
-                checkMapper.updateStatusToFailingByPrimaryKey(checkId);
+                checkMapper.updateStatusToCriticalByPrimaryKey(checkId);
                 checkMapper.updateOutputByPrimaryKey(checkId,"socket connection failed "+host+":"+port);
             }
             //关闭socket
@@ -190,7 +193,7 @@ public class CheckUtil {
                 }
                 log.info("[Service] check pass "+check);
             } catch (Exception e) {
-                check.setStatus("failing").setOutput("HTTP GET " + checkUrl + " "+ "refused");
+                check.setStatus("critical").setOutput("HTTP GET " + checkUrl + " "+ "refused");
                 checkMapper.updateByPrimaryKey(check);
                 log.warn("【服务异常】" + check);
             }
@@ -238,6 +241,9 @@ public class CheckUtil {
                 .setServiceId(newService.getId())
                 .setServiceName(newService.getName())
                 .setNode(nodeName);
+
+        if(newServiceCheck.getStatus()!=null&&!newServiceCheck.getStatus().equals(""))    check.setStatus(newServiceCheck.getStatus());
+        else check.setStatus("critical");
 
         //Check信息持久化，持久化url，interval,timeout等等到数据库
         CheckInfo checkInfo = new CheckInfo();
