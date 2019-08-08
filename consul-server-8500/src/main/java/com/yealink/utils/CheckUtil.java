@@ -24,9 +24,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 @Slf4j
@@ -50,6 +53,12 @@ public class CheckUtil {
 
     @Autowired
     private CheckInfoMapper checkInfoMapper;
+
+    //用来记录倒计时一直为critical的时间，如果一直保持critical，则注销服务
+    private static ConcurrentHashMap<String,Long> criticalCountMap = new ConcurrentHashMap<>();
+
+    //用来记录健康检查的scheduledFuture
+    private static ConcurrentHashMap<String,ScheduledFuture> scheduledFutureMap = new ConcurrentHashMap<>();
 
     /**
      * 为新注册的服务开启检查
@@ -87,9 +96,17 @@ public class CheckUtil {
         //检查check是否已经存在
         if(checkMapper.selectByPrimaryKey(check.getCheckId())==null)    checkMapper.insertSelective(check);
 
-        //TODO 开启检查critical,如果在deregisterCriticalServiceAfter时间后仍为critical，则注销服务（30s检查一次）
-        String deregisterCriticalServiceAfter = newServiceCheck.getDeregisterCriticalServiceAfter();
-        checkCritical(deregisterCriticalServiceAfter,check.getCheckId(),newService.getId());
+        String criticalTime = newServiceCheck.getDeregisterCriticalServiceAfter();
+        long criticalMills = getCriticalMills(criticalTime);
+        long count = criticalMills;
+        if(criticalTime!=null&&!criticalTime.equals(""))    criticalCountMap.put(newService.getId(),criticalMills);
+
+        //先把上次的任务取消
+        if(scheduledFutureMap.get(newService.getId())!=null){
+            ScheduledFuture scheduledFuture = scheduledFutureMap.get(newService.getId());
+            scheduledFuture.cancel(true);
+            System.out.println("原有任务被取消了");
+        }
 
         //开启定时任务
         ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(() -> {
@@ -110,13 +127,31 @@ public class CheckUtil {
                         checkMapper.updateByPrimaryKey(check);
                     }
                 }
+                criticalCountMap.put(newService.getId(),criticalMills);
                 log.info("[Service] check pass "+check);
             } catch (Exception e) {
                 check.setStatus("critical").setOutput("HTTP GET " + url + " "+ "refused");
                 checkMapper.updateByPrimaryKey(check);
                 log.warn("【服务异常】" + check);
+                //TODO 开启检查critical,如果在deregisterCriticalServiceAfter时间后仍为critical，则注销服务
+                if(criticalTime!=null&&!criticalTime.equals("")){
+                    //判断时间倒计时到了没
+                    Long timeRest = criticalCountMap.get(newService.getId());
+                    System.out.println("还剩下"+timeRest);
+                    if(timeRest>0){
+                        timeRest-=TimeUnit.MILLISECONDS.convert(interval_timeNum,interval_timeUnit);
+                        criticalCountMap.put(newService.getId(),timeRest);
+                    }else {
+                        ScheduledFuture currentScheduledFuture = scheduledFutureMap.get(newService.getId());
+                        currentScheduledFuture.cancel(true);
+                        agentService.agentServiceDeregister(newService.getId());
+                    }
+                }
             }
         }, 0, interval_timeNum, interval_timeUnit);
+
+        //放入futureMap
+        scheduledFutureMap.put(newService.getId(),scheduledFuture);
 
     }
 
@@ -265,51 +300,13 @@ public class CheckUtil {
         startTcpCheck(check.getCheckId(),url,interval,timeout);
     }
 
-    /**
-     * 注册服务时，检查初始化为critical，如果在此时间内一直为critical，则注销服务
-     * @param deregisterCriticalServiceAfter 注销时间，如果在此时间内仍为critical，则注销服务
-     */
-    public  void checkCritical(String deregisterCriticalServiceAfter,String checkId,String serviceId){
-        if(deregisterCriticalServiceAfter!=null&&!deregisterCriticalServiceAfter.equals("")){
-            System.out.println("进入了checkCritical方法");
-            TimeUnit timeUnit = TimeUtil.getTimeUnit(deregisterCriticalServiceAfter);
-            long timeNum = TimeUtil.getTimeNum(deregisterCriticalServiceAfter);
-            long ms = TimeUnit.MILLISECONDS.convert(timeNum, timeUnit);
-            new CheckCriticalThread(ms,checkId,serviceId).start();
-        }
+    private long getCriticalMills(String criticalTime) {
+        if(criticalTime==null||criticalTime.equals("")) return 0;
+        long timeNum = TimeUtil.getTimeNum(criticalTime);
+        TimeUnit timeUnit = TimeUtil.getTimeUnit(criticalTime);
+        return TimeUnit.MILLISECONDS.convert(timeNum,timeUnit);
     }
 
-    class CheckCriticalThread extends Thread{
-        long ms;
-        String checkId;
-        String serviceId;
-        public CheckCriticalThread(long ms,String checkId,String serviceId){
-            this.ms=ms;
-            this.checkId=checkId;
-            this.serviceId=serviceId;
-        }
-
-        public void run(){
-            System.out.println("进入了线程");
-            while(ms>0){
-                Check check = checkMapper.selectByPrimaryKey(checkId);
-                String status = check.getStatus();
-                if(status.equals("passing")){
-                    System.out.println("critical检查为passing");
-                    break;
-                }else{
-                    System.out.println("critical检查为critical,剩余时间"+ms);
-                    try {
-                        Thread.sleep(30000);
-                        ms-=30000;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            if(ms<=0)   agentService.agentServiceDeregister(serviceId);
-        }
-    }
 }
 
 

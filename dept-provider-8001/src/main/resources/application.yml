@@ -9,12 +9,12 @@ spring:
         service-name: dept-provider
         register-health-check: true
         health-check-path: /actuator/health
-        health-check-interval: 30s
+        health-check-interval: 5s
         health-check-timeout: 5s
         prefer-ip-address: true
         tags: version=2.2.20.0,environment=production
         enabled: true
-        health-check-critical-timeout: 5m
+        health-check-critical-timeout: 1m
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://62.234.44.124:3306/consul_schema
