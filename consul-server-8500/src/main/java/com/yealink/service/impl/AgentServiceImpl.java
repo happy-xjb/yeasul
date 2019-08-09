@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -118,12 +119,14 @@ public class AgentServiceImpl implements AgentService {
 
         //将标签写入数据库
         List<String> tags = newService.getTags();
-        ServiceTag serviceTag = new ServiceTag();
-        serviceTag.setService(newService.getName());
-        serviceTag.setServiceId(newService.getId());
-        for(String tag: tags){
-            serviceTag.setValue(tag);
-            serviceTagMapper.insert(serviceTag);
+        if(tags!=null&&tags.size()>0){
+            ServiceTag serviceTag = new ServiceTag();
+            serviceTag.setService(newService.getName());
+            serviceTag.setServiceId(newService.getId());
+            for(String tag: tags){
+                serviceTag.setValue(tag);
+                serviceTagMapper.insert(serviceTag);
+            }
         }
 
 
@@ -154,12 +157,19 @@ public class AgentServiceImpl implements AgentService {
         //删除对应的check
         List<com.yealink.entities.Check> checkList = checkMapper.selectByServiceId(serviceId);
         for(com.yealink.entities.Check check :checkList){
+            //取消检查任务
+            ScheduledFuture scheduledFuture = CheckUtil.scheduledFutureMap.get(check.getCheckId());
+            if(scheduledFuture!=null)   scheduledFuture.cancel(true);
+
             checkMapper.deleteByPrimaryKey(check.getCheckId());
             checkInfoMapper.deleteByPrimaryKey(check.getCheckId());
             log.info("[SUCCESS] delete the check with check id : "+check.getCheckId());
         }
         //删除对应的register_info
         registerInfoMapper.deleteByServiceId(serviceId);
+
+        CheckUtil.criticalCountMap.remove(serviceId);
+
         log.info("[Deregister Service] deregister service "+serviceId+" successfully");
     }
 

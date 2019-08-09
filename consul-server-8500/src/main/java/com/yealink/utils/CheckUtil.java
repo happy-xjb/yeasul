@@ -23,13 +23,10 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 @Slf4j
@@ -55,10 +52,10 @@ public class CheckUtil {
     private CheckInfoMapper checkInfoMapper;
 
     //用来记录倒计时一直为critical的时间，如果一直保持critical，则注销服务
-    private static ConcurrentHashMap<String,Long> criticalCountMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String,Long> criticalCountMap = new ConcurrentHashMap<>();
 
     //用来记录健康检查的scheduledFuture
-    private static ConcurrentHashMap<String,ScheduledFuture> scheduledFutureMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String,ScheduledFuture> scheduledFutureMap = new ConcurrentHashMap<>();
 
     /**
      * 为新注册的服务开启检查
@@ -102,10 +99,9 @@ public class CheckUtil {
         if(criticalTime!=null&&!criticalTime.equals(""))    criticalCountMap.put(newService.getId(),criticalMills);
 
         //先把上次的任务取消
-        if(scheduledFutureMap.get(newService.getId())!=null){
-            ScheduledFuture scheduledFuture = scheduledFutureMap.get(newService.getId());
-            scheduledFuture.cancel(true);
-            System.out.println("原有任务被取消了");
+        ScheduledFuture currentScheduledFuture = scheduledFutureMap.get(check.getCheckId());
+        if(currentScheduledFuture!=null){
+            currentScheduledFuture.cancel(true);
         }
 
         //开启定时任务
@@ -142,8 +138,9 @@ public class CheckUtil {
                         timeRest-=TimeUnit.MILLISECONDS.convert(interval_timeNum,interval_timeUnit);
                         criticalCountMap.put(newService.getId(),timeRest);
                     }else {
-                        ScheduledFuture currentScheduledFuture = scheduledFutureMap.get(newService.getId());
-                        currentScheduledFuture.cancel(true);
+                        //取消检查任务
+                        ScheduledFuture currentTask = scheduledFutureMap.get(check.getCheckId());
+                        if(currentTask!=null)   currentTask.cancel(true);
                         agentService.agentServiceDeregister(newService.getId());
                     }
                 }
@@ -151,7 +148,7 @@ public class CheckUtil {
         }, 0, interval_timeNum, interval_timeUnit);
 
         //放入futureMap
-        scheduledFutureMap.put(newService.getId(),scheduledFuture);
+        scheduledFutureMap.put(check.getCheckId(),scheduledFuture);
 
     }
 
@@ -215,32 +212,39 @@ public class CheckUtil {
      */
     public void startHttpCheck(String checkId,String checkUrl,long interval,long timeout,TimeUnit timeUnit){
         Check check = checkMapper.selectByPrimaryKey(checkId);
+        //先把上次的任务取消
+        ScheduledFuture currentScheduledFuture = scheduledFutureMap.get(checkId);
+        if(currentScheduledFuture!=null){
+            currentScheduledFuture.cancel(true);
+        }
         //开启定时任务
-        scheduledExecutorService.scheduleAtFixedRate(()->{
+        ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(() -> {
             RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout((int) timeout).setConnectTimeout((int) timeout).build();
             HttpGet httpGet = new HttpGet(checkUrl);
             httpGet.setConfig(requestConfig);
-            CloseableHttpResponse response =null;
+            CloseableHttpResponse response = null;
             try {
                 response = httpClient.execute(httpGet);
                 HttpEntity entity = response.getEntity();
-                check.setOutput("GET " + checkUrl +" " + response.getStatusLine());
-                if(entity != null){
+                check.setOutput("GET " + checkUrl + " " + response.getStatusLine());
+                if (entity != null) {
                     String json = EntityUtils.toString(entity);
 //                    ActuatorHealthVO actuatorHealthVO = gson.fromJson(json, ActuatorHealthVO.class);
                     Health health = gson.fromJson(json, Health.class);
-                    if(health.getStatus().getCode().equals(Status.UP.toString())){
-                        check.setOutput("HTTP GET " + checkUrl + " "+ response.getStatusLine()).setStatus("passing");
+                    if (health.getStatus().getCode().equals(Status.UP.toString())) {
+                        check.setOutput("HTTP GET " + checkUrl + " " + response.getStatusLine()).setStatus("passing");
                         checkMapper.updateByPrimaryKey(check);
                     }
                 }
-                log.info("[Service] check pass "+check);
+                log.info("[Service] check pass " + check);
             } catch (Exception e) {
-                check.setStatus("critical").setOutput("HTTP GET " + checkUrl + " "+ "refused");
+                check.setStatus("critical").setOutput("HTTP GET " + checkUrl + " " + "refused");
                 checkMapper.updateByPrimaryKey(check);
                 log.warn("【服务异常】" + check);
             }
-        },0,interval,timeUnit);
+        }, 0, interval, timeUnit);
+
+        scheduledFutureMap.put(checkId,scheduledFuture);
     }
 
     /**
