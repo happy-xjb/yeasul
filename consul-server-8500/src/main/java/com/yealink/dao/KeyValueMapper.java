@@ -3,6 +3,8 @@ package com.yealink.dao;
 import com.yealink.entities.KeyValue;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface KeyValueMapper {
     int insert(KeyValue record);
 
@@ -13,4 +15,6 @@ public interface KeyValueMapper {
     int update(KeyValue record);
 
     void delectByKeyAndDataceneter(@Param("key")String key,@Param("datacenter") String datacenter);
+
+    List<String> selectByKeyPrefixAndDatacenter(@Param("prefix") String prefix,@Param("datacenter") String datacenter);
 }

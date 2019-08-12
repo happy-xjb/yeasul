@@ -9,6 +9,7 @@ import java.util.Base64;
  */
 public class Base64Utils {
     public static String encode(String str){
-       return Base64.getEncoder().encodeToString(str.getBytes());
+       if(str!=null&&!str.equals(""))   return Base64.getEncoder().encodeToString(str.getBytes());
+       return null;
     }
 }

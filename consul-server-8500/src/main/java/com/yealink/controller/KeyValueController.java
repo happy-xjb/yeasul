@@ -1,13 +1,9 @@
 package com.yealink.controller;
 
-import com.ecwid.consul.v1.Response;
-import com.ecwid.consul.v1.kv.KeyValueConsulClient;
 import com.ecwid.consul.v1.kv.model.GetBinaryValue;
-import com.ecwid.consul.v1.kv.model.GetValue;
 import com.yealink.service.KeyValueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +32,7 @@ public class KeyValueController {
     }
 
     @PutMapping("/**")
-    public boolean addKey(HttpServletRequest request, @RequestBody String value){
+    public boolean addKey(HttpServletRequest request,@RequestBody(required = false) String value){
         String requestURI = request.getRequestURI();
         String remoteAddr = request.getRemoteAddr();
         int remotePort = request.getRemotePort();

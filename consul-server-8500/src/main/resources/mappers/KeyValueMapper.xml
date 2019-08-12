@@ -49,4 +49,7 @@
   <delete id="delectByKeyAndDataceneter">
     delete from  key_value where `key` =#{key} and datacenter = #{datacenter}
   </delete>
+    <select id="selectByKeyPrefixAndDatacenter" resultType="java.lang.String">
+      select `key` from key_value where `key` like '${prefix}%' and datacenter = #{datacenter} and `key`!=#{prefix}
+    </select>
 </mapper>

@@ -31,6 +31,8 @@ public class UiServiceImpl implements UiService {
     RegisterInfoMapper registerInfoMapper;
     @Autowired
     NodeMapper nodeMapper;
+    @Autowired
+    KeyValueMapper keyValueMapper;
     @Value("${consul.config.datacenter}")
     String datacenter;
 
@@ -84,5 +86,33 @@ public class UiServiceImpl implements UiService {
         }
 
         return map;
+    }
+
+    @Override
+    public Map<String, String> getKVPathIndex(String currentPath) {
+        List<String> pathList = Arrays.asList(currentPath.split("/"));
+        Map<String,String> map  = new LinkedHashMap<>();
+        StringBuffer sb = new StringBuffer();
+        sb.append("/ui/kv/");
+        for(String path : pathList){
+            sb.append(path+"/");
+            map.put(path,sb.toString());
+        }
+        return map;
+    }
+
+    @Override
+    public Set<String> getKVCatalog(String currentPath) {
+        List<String> keyList = keyValueMapper.selectByKeyPrefixAndDatacenter(currentPath, datacenter);
+        Set<String> rsSet = new HashSet<>();
+        for(String key : keyList){
+            String nextPath = key.substring(currentPath.length());
+            if(nextPath.indexOf('/')==-1)   rsSet.add(nextPath);
+            else{
+                int indexOfSeperator = nextPath.indexOf("/");
+                rsSet.add(nextPath.substring(0,indexOfSeperator+1));
+            }
+        }
+        return rsSet;
     }
 }
